@@ -1,108 +1,104 @@
 // for winston (system/application logs)
-const winston = require("winston");
-const { format, transports, addColors, loggers } = require("winston");
+const winston = require('winston')
+const { format, transports, addColors, loggers } = require('winston')
 
-const { combine, timestamp, label, printf } = format;
+const { combine, timestamp, label, printf } = format
 
 const customLevels = {
   levels: {
     error: 0,
     warn: 1,
     info: 2,
-    daemon: 3,
+    daemon: 3
   },
   colors: {
-    error: "bold black redBG",
-    warn: "bold black yellowBG",
-    info: "bold black greenBG",
-    debug: "bold black blueBG",
-  },
-};
-addColors(customLevels.colors);
-const fixedFormat = printf(({ level, message }) => `${level} ${message}`); // timestamp can be added to parameters
+    error: 'bold black redBG',
+    warn: 'bold black yellowBG',
+    info: 'bold black greenBG',
+    debug: 'bold black blueBG'
+  }
+}
+addColors(customLevels.colors)
+const fixedFormat = printf(({ level, message }) => `${level} ${message}`) // timestamp can be added to parameters
 
-const mode = process.env.LOGGING_MODE || "debug";
+const mode = process.env.LOGGING_MODE || 'debug'
 const silentSwitches = {
   debug: {
     error: false,
     warn: false,
     info: false,
-    debug: false,
+    debug: false
   },
   production: {
     error: false,
     warn: false,
     info: true,
-    debug: true,
-  },
-};
+    debug: true
+  }
+}
 
-loggers.add("debugLogger", {
+loggers.add('debugLogger', {
   format: combine(
-    label({ label: "Debug" }),
+    label({ label: 'Debug' }),
     timestamp({
-      format: "YYYY-MM-DD HH:mm:ss",
+      format: 'YYYY-MM-DD HH:mm:ss'
     }),
     format.colorize(),
     fixedFormat
   ),
-  transports: [new transports.Console({ level: "debug" })],
-  silent: silentSwitches[mode].debug,
-});
+  transports: [new transports.Console({ level: 'debug' })],
+  silent: silentSwitches[mode].debug
+})
 
-loggers.add("infoLogger", {
+loggers.add('infoLogger', {
   format: combine(
-    label({ label: "Info" }),
+    label({ label: 'Info' }),
     timestamp({
-      format: "YYYY-MM-DD HH:mm:ss",
+      format: 'YYYY-MM-DD HH:mm:ss'
     }),
     format.colorize(),
     fixedFormat
   ),
-  transports: [new transports.Console({ level: "info" })],
-  silent: silentSwitches[mode].info,
-});
+  transports: [new transports.Console({ level: 'info' })],
+  silent: silentSwitches[mode].info
+})
 
-loggers.add("warningLogger", {
+loggers.add('warningLogger', {
   format: combine(
-    label({ label: "Warning" }),
+    label({ label: 'Warning' }),
     timestamp({
-      format: "YYYY-MM-DD HH:mm:ss",
+      format: 'YYYY-MM-DD HH:mm:ss'
     }),
     format.colorize(),
     fixedFormat
   ),
-  transports: [
-    new transports.Console({ handleExceptions: true, level: "warn" }),
-  ],
+  transports: [new transports.Console({ handleExceptions: true, level: 'warn' })],
   silent: silentSwitches[mode].warn,
-  rejectionHandlers: [new transports.Console()],
-});
+  rejectionHandlers: [new transports.Console()]
+})
 
-loggers.add("errorLogger", {
+loggers.add('errorLogger', {
   format: combine(
-    label({ label: "Error" }),
+    label({ label: 'Error' }),
     timestamp({
-      format: "YYYY-MM-DD HH:mm:ss",
+      format: 'YYYY-MM-DD HH:mm:ss'
     }),
     format.colorize(),
     fixedFormat
   ),
-  transports: [
-    new transports.Console({ handleExceptions: true, level: "error" }),
-  ],
+  transports: [new transports.Console({ handleExceptions: true, level: 'error' })],
   silent: silentSwitches[mode].error,
-  rejectionHandlers: [new transports.Console()],
-});
+  rejectionHandlers: [new transports.Console()]
+})
 
-const warningLogger = winston.loggers.get("warningLogger");
-const errorLogger = winston.loggers.get("errorLogger");
-const infoLogger = winston.loggers.get("infoLogger");
-const debugLogger = winston.loggers.get("debugLogger");
+const warningLogger = winston.loggers.get('warningLogger')
+const errorLogger = winston.loggers.get('errorLogger')
+const infoLogger = winston.loggers.get('infoLogger')
+const debugLogger = winston.loggers.get('debugLogger')
 
 module.exports = {
   warningLogger,
   errorLogger,
   infoLogger,
-  debugLogger,
-};
+  debugLogger
+}

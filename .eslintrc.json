@@ -1,0 +1,45 @@
+{
+  "env": {
+    "node": true,
+    "commonjs": true,
+    "es2021": true
+  },
+  "extends": ["prettier", "airbnb-base", "plugin:import/recommended"],
+  "plugins": ["prettier", "import"],
+  "parserOptions": {
+    "ecmaVersion": 12
+  },
+  "rules": {
+    "no-shadow": ["warn", { "builtinGlobals": true }],
+    "no-underscore-dangle": "off",
+    "no-console": "off",
+    "no-use-before-define": ["warn", { "variables": false }],
+    "no-unused-vars": ["warn", { "vars": "all", "caughtErrors": "all", "args": "none" }],
+    "camelcase": ["off", { "ignoreDestructuring": true, "properties": "never" }],
+    "import/no-commonjs": "off",
+    "arrow-body-style": ["warn", "as-needed"],
+    "prefer-arrow-callback": "off",
+    "comma-dangle": ["error", "never"],
+    "semi": ["error", "never"],
+    "prefer-const": [
+      "error",
+      {
+        "destructuring": "any",
+        "ignoreReadBeforeAssign": false
+      }
+    ],
+    "block-spacing": ["warn", "always"],
+    "space-before-blocks": ["warn", "always"],
+    "implicit-arrow-linebreak": ["warn", "below"],
+    "function-paren-newline": ["warn", "consistent"],
+    "prettier/prettier": "off",
+    "max-len": "off",
+    "no-await-in-loop": "off",
+    "no-restricted-syntax": "off",
+    "guard-for-in": "off",
+    "consistent-return": "off",
+    "array-callback-return": "off",
+    "no-prototype-builtins": "off",
+    "no-promise-executor-return": "off"
+  }
+}
