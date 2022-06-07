@@ -26,7 +26,7 @@ const User = ramenDB.define(
     },
     profile_pic: {
       type: DataTypes.STRING,
-      defaultValue: ''
+      defaultValue: 'https://imgur.com/Wrdjiye.png'
     },
     description: {
       type: DataTypes.TEXT
