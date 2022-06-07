@@ -5,6 +5,8 @@ if (process.env.ENV !== "production") {
   require("dotenv").config();
 }
 
+require("./databases/mariaDB");
+
 const PORT = process.env.PORT || 3000;
 const { infoLogger } = require("./utils/logger");
 
