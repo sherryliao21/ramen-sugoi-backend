@@ -27,6 +27,6 @@ function authenticateDB(database, dbName) {
 }
 authenticateDB(ramenDB, 'ramenDB')
 
-module.exports = {
-  ramenDB
-}
+
+
+module.exports = ramenDB

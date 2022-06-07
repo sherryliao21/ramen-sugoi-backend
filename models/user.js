@@ -1,5 +1,5 @@
 const { DataTypes } = require('sequelize')
-const { ramenDB } = require('../databases/mariaDB')
+const ramenDB = require('../databases/mariaDB')
 
 const User = ramenDB.define(
   'user',
@@ -8,7 +8,8 @@ const User = ramenDB.define(
       type: DataTypes.INTEGER,
       allowNull: false,
       primaryKey: true,
-      unique: true
+      unique: true,
+      autoIncrement: true
     },
     full_name: {
       type: DataTypes.STRING
