@@ -26,7 +26,7 @@ function authenticateDB(database, dbName) {
     .catch((error) => errorLogger.error(`[MariaDB] '${dbName}': Connection failed, ${error}`))
 }
 authenticateDB(ramenDB, 'ramenDB')
-
+ramenDB.sync()
 
 
 module.exports = ramenDB

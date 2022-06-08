@@ -1,5 +1,7 @@
 const { DataTypes } = require('sequelize')
 const ramenDB = require('../databases/mariaDB')
+const Role = require('./role')
+const Followship = require('./followship')
 
 const User = ramenDB.define(
   'user',
@@ -36,14 +38,31 @@ const User = ramenDB.define(
       type: DataTypes.BOOLEAN,
       defaultValue: false
     },
-    role_id: {
+    roleId: {
       type: DataTypes.INTEGER
     },
-    favorite_id: {
+    favoriteId: {
       type: DataTypes.INTEGER
     }
   },
   { paranoid: true }
 )
+
+Role.hasOne(User)
+User.belongsTo(Role, {
+  foreignKey: 'roleId'
+})
+
+User.belongsToMany(User, {
+  through: Followship,
+  as: 'Followings',
+  foreignKey: 'followingId'
+})
+
+User.belongsToMany(User, {
+  through: Followship,
+  as: 'Followers',
+  foreignKey: 'followerId'
+})
 
 module.exports = User
