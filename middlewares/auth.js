@@ -1,6 +1,7 @@
 const jwt = require('jsonwebtoken')
 const User = require('../models/user')
-const { warningLogger } = require('../utils/logger')
+const Role = require('../models/role')
+const { warningLogger, errorLogger } = require('../utils/logger')
 
 const isAuthenticated = async (req, res, next) => {
   try {
@@ -14,7 +15,7 @@ const isAuthenticated = async (req, res, next) => {
       warningLogger.warn('auth/isAuthenticated: Verification error')
       return res.status(400).send({ status: 'error', message: 'Verification error' })
     }
-    if (isVerified.exp * 1000 >= Date.now()) {
+    if (isVerified.exp * 1000 <= Date.now()) {
       warningLogger.warn('auth/isAuthenticated: Token expired')
       return res.status(400).send({ status: 'error', message: 'Token expired' })
     }
@@ -27,6 +28,10 @@ const isAuthenticated = async (req, res, next) => {
       warningLogger.warn('auth/isAuthenticated: User not found')
       return res.status(400).send({ status: 'error', message: 'User not found' })
     }
+    req.user = {
+      name: user.name,
+      roleId: user.roleId
+    }
     return next()
   } catch (error) {
     errorLogger.error(`auth/isAuthenticated: ${error}`)
@@ -37,6 +42,35 @@ const isAuthenticated = async (req, res, next) => {
   }
 }
 
+const isAdmin = async (req, res, next) => {
+  try {
+    const { roleId } = req.user
+    const userRole = await Role.findOne({
+      where: {
+        id: roleId
+      },
+      raw: true,
+      nest: true
+    })
+    if (userRole.id !== 1) {
+      warningLogger.warn(`authController/isAdmin: User is not an admin.`)
+      return res.status(401).send({
+        status: 'error',
+        message: 'No permission.'
+      })
+    }
+    next()
+  } catch (error) {
+    errorLogger.error(`auth/isAdmin: ${error}`)
+    return res.status(500).send({
+      status: 'error',
+      message: 'Authentication error'
+    })
+  }
+}
+
+
 module.exports = {
-  isAuthenticated
+  isAuthenticated,
+  isAdmin
 }
