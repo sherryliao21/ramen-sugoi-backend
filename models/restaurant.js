@@ -1,0 +1,42 @@
+const { DataTypes } = require('sequelize')
+const ramenDB = require('../databases/mariaDB')
+const Area = require('./area')
+const Category = require('./category')
+
+const Restaurant = ramenDB.define(
+  'restaurant',
+  {
+    id: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      primaryKey: true,
+      unique: true
+    },
+    profile_pic: {
+      type: DataTypes.STRING,
+      defaultValue: 'https://imgur.com/Wrdjiye.png'
+    },
+    description: {
+      type: DataTypes.TEXT
+    },
+    categoryId: {
+      type: DataTypes.INTEGER
+    },
+    areaId: {
+      type: DataTypes.INTEGER
+    }
+  },
+  { paranoid: true }
+)
+
+Area.hasOne(Restaurant)
+Restaurant.belongsTo(Area, {
+  foreignKey: 'areaId'
+})
+
+Category.hasOne(Restaurant)
+Restaurant.belongsTo(Category, {
+  foreignKey: 'categoryId'
+})
+
+module.exports = Restaurant
