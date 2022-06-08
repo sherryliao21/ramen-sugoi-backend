@@ -36,7 +36,7 @@ const userLogin = async (req, res) => {
       fullName: user.full_name,
       email: user.email,
       profilePic: user.profile_pic,
-      roleId: user.role_id,
+      roleId: user.roleId,
       isBanned: false
     }
     const token = await jwt.sign(userPayload, process.env.JWT_SECRET, { expiresIn: '1h' })
