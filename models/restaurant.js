@@ -10,7 +10,11 @@ const Restaurant = ramenDB.define(
       type: DataTypes.INTEGER,
       allowNull: false,
       primaryKey: true,
-      unique: true
+      unique: true,
+      autoIncrement: true
+    },
+    name: {
+      type: DataTypes.STRING
     },
     profile_pic: {
       type: DataTypes.STRING,

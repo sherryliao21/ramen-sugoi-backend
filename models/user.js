@@ -17,7 +17,8 @@ const User = ramenDB.define(
       type: DataTypes.STRING
     },
     nick_name: {
-      type: DataTypes.STRING
+      type: DataTypes.STRING,
+      allowNull: true
     },
     email: {
       type: DataTypes.STRING,
@@ -32,14 +33,12 @@ const User = ramenDB.define(
       defaultValue: 'https://imgur.com/Wrdjiye.png'
     },
     description: {
-      type: DataTypes.TEXT
-    },
-    isBanned: {
-      type: DataTypes.BOOLEAN,
-      defaultValue: false
+      type: DataTypes.TEXT,
+      allowNull: true
     },
     roleId: {
-      type: DataTypes.INTEGER
+      type: DataTypes.INTEGER,
+      defaultValue: 2
     }
   },
   { paranoid: true }
