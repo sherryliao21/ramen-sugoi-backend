@@ -29,13 +29,13 @@ const Comment = ramenDB.define(
   { paranoid: true }
 )
 
-Restaurant.hasMany(User, {
+Restaurant.belongsToMany(User, {
   through: Comment,
   as: 'Commenter',
   foreignKey: 'authorId'
 })
 
-User.hasMany(Restaurant, {
+User.belongsToMany(Restaurant, {
   through: Comment,
   as: 'CommentedRestaurants',
   foreignKey: 'restaurantId'

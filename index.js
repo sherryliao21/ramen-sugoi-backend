@@ -4,7 +4,7 @@ const app = express()
 if (process.env.ENV !== 'production') {
   require('dotenv').config()
 }
-require('./databases/mariaDB')
+require('./models/index')
 const routes = require('./routes/index')
 
 

@@ -22,13 +22,13 @@ const Favorite = ramenDB.define(
   { paranoid: true }
 )
 
-Restaurant.hasMany(User, {
+Restaurant.belongsToMany(User, {
   through: Favorite,
   as: 'LikedUsers',
   foreignKey: 'userId'
 })
 
-User.hasMany(Restaurant, {
+User.belongsToMany(Restaurant, {
   through: Favorite,
   as: 'LikedRestaurants',
   foreignKey: 'restaurantId'

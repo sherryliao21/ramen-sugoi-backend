@@ -40,9 +40,6 @@ const User = ramenDB.define(
     },
     roleId: {
       type: DataTypes.INTEGER
-    },
-    favoriteId: {
-      type: DataTypes.INTEGER
     }
   },
   { paranoid: true }

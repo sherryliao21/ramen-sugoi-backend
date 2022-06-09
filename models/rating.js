@@ -25,13 +25,13 @@ const Rating = ramenDB.define(
   { paranoid: true }
 )
 
-Restaurant.hasMany(User, {
+Restaurant.belongsToMany(User, {
   through: Rating,
   as: 'RatingAuthors',
   foreignKey: 'authorId'
 })
 
-User.hasMany(Restaurant, {
+User.belongsToMany(Restaurant, {
   through: Rating,
   as: 'RatedRestaurants',
   foreignKey: 'restaurantId'
