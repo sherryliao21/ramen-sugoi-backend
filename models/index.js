@@ -11,7 +11,7 @@ const Role = require('./role')
 const User = require('./user')
 
 ramenDB
-  // .sync({ force: true })    // enable to re-sync DB. CAUTIOUS: will drop all existing DBs
+  // .sync({ force: true }) // enable to re-sync DB. CAUTIOUS: will drop all existing DBs
   .sync()
   .then(() => {
     infoLogger.info('[MariaDB] DB synced')

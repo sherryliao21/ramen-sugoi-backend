@@ -2,7 +2,7 @@ if (process.env.ENV !== 'production') {
   require('dotenv').config()
 }
 
-require('../databases/mariaDB')
+const ramenDB = require('../databases/mariaDB')
 const Category = require('../models/category')
 const Area = require('../models/area')
 const Restaurant = require('../models/restaurant')
@@ -42,15 +42,17 @@ const seedRestaurants = [
 
 const insertSeedRestaurants = async (areas, categories, restaurants) => {
   try {
-    for (let area of areas) {
-      await Area.create(area)
-    }
-    for (let category of categories) {
-      await Category.create(category)
-    }
-    for (let restaurant of restaurants) {
-      await Restaurant.create(restaurant)
-    }
+    await ramenDB.transaction(async (t) => {
+      for (let area of areas) {
+        await Area.create(area, { transaction: t })
+      }
+      for (let category of categories) {
+        await Category.create(category, { transaction: t })
+      }
+      for (let restaurant of restaurants) {
+        await Restaurant.create(restaurant, { transaction: t })
+      }
+    })
 
     infoLogger.info('seeders/insertRestaurants: Successfully added seed restaurants!')
     process.exit()
