@@ -1,0 +1,38 @@
+version: '3'
+
+services:
+  node:
+    image: sherryliao21/node-ramen-app:latest
+    container_name: ramen-node-app
+    ports:
+      - "3000:3000"
+    environment:
+      - MDB_HOST=172.17.0.2:3306
+      - MDB_USERNAME=root
+      - MDB_PASSWORD=password
+    networks:
+      - ramen-network
+    depends_on:
+      - mariadb
+    command: ["node", "index.js"]
+    restart: always
+
+  mariadb:
+    image: mariadb
+    container_name: ramen-mariaDB
+    ports:
+      - "3306:3306"
+    environment:
+      - MARIADB_ROOT_PASSWORD=password
+    networks:
+      - ramen-network
+    volumes:
+      - ramen-mariadb-data:/data/db
+
+networks:
+  ramen-network:
+    driver: bridge
+
+volumes:
+  ramen-mariadb-data:
+    driver: local
