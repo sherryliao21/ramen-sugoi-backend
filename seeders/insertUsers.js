@@ -57,5 +57,3 @@ const insertSeedUsers = async (roles, users) => {
 }
 
 insertSeedUsers(seedRoles, seedUsers)
-
-// process.exit()

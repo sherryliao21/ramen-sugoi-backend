@@ -5,8 +5,8 @@ if (process.env.ENV !== 'production') {
 require('../databases/mariaDB')
 const Category = require('../models/category')
 const Area = require('../models/area')
-const { infoLogger, errorLogger } = require('../utils/logger')
 const Restaurant = require('../models/restaurant')
+const { infoLogger, errorLogger } = require('../utils/logger')
 
 const seedCategories = [
   { id: 1, name: '雞白湯' },
