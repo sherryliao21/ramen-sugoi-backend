@@ -25,6 +25,3 @@ EXPOSE 3000
 # Add wair-for-it
 COPY wait-for-it.sh wait-for-it.sh
 RUN chmod +x wait-for-it.sh
-
-ENTRYPOINT [ "/bin/bash", "-c" ]
-CMD [ "./wait-for-it.sh", "localhost:3000", "--strict", "node", "index.js" ]

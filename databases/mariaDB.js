@@ -5,6 +5,7 @@ const username = process.env.MDB_USERNAME || ''
 const pwd = encodeURIComponent(process.env.MDB_PASSWORD) || ''
 const host = process.env.MDB_HOST
 
+console.log(`mariadb://${username}:${pwd}@${host}/ramen`)
 const ramenDB = new Sequelize(`mariadb://${username}:${pwd}@${host}/ramen`, {
   dialect: 'mariadb',
   logging: false,
