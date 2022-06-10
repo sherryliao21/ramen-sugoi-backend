@@ -10,7 +10,7 @@ services:
     ports:
       - "3000:3000"
     environment: # will replace .env variables
-      - MDB_HOST=0.0.0.0:3308
+      - MDB_HOST=mariadb:3306
       - MDB_USERNAME=root
       - MDB_PASSWORD=password
     networks:
@@ -21,7 +21,7 @@ services:
     restart: always
 
   mariadb:
-    image: mariadb
+    image: mariadb:10.7.4
     container_name: ramen-mariaDB
     ports:
       - "3308:3306"
