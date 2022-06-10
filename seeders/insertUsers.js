@@ -14,7 +14,7 @@ const seedData = [
       full_name: 'test_admin',
       nick_name: 'admin',
       email: 'admin@example.com',
-      password: 'admin',
+      password: '$2a$10$MsEjbMoiEo8ZwFWCB04b7u9P66ZzBe6a6KEBB38R7C0fx3ptw.y2C',
       description: 'admin',
       roleId: 1
     }
@@ -26,7 +26,7 @@ const seedData = [
       full_name: 'test_user1',
       nick_name: 'user1',
       email: 'user1@example.com',
-      password: 'user1',
+      password: '$2a$10$3agOAWd9uVw.z7UScL2jCuJtxuJiebyEO2j/Lwu8Ad5nYpm8m0Jrq',
       description: 'user1',
       roleId: 2
     }
@@ -38,7 +38,7 @@ const seedData = [
       full_name: 'test_user2',
       nick_name: 'user2',
       email: 'user2@example.com',
-      password: 'user2',
+      password: '$2a$10$JeI1Pvp0zjqNFCC7QC0S8euttQlr5P23NgZgD2M1UBKGdWOIGlQn.',
       description: 'user2',
       roleId: 3
     }
