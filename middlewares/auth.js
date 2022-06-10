@@ -29,6 +29,7 @@ const isAuthenticated = async (req, res, next) => {
       return res.status(400).send({ status: 'error', message: 'User not found' })
     }
     req.user = {
+      id: user.id,
       name: user.name,
       roleId: user.roleId
     }
@@ -52,8 +53,8 @@ const isAdmin = async (req, res, next) => {
       raw: true,
       nest: true
     })
-    if (userRole.id !== 1) {
-      warningLogger.warn(`authController/isAdmin: User is not an admin.`)
+    if (userRole.name !== 'Admin') {
+      warningLogger.warn(`authController/isAdmin: This user is not an admin.`)
       return res.status(401).send({
         status: 'error',
         message: 'No permission.'
@@ -69,8 +70,35 @@ const isAdmin = async (req, res, next) => {
   }
 }
 
+const isUser = async (req, res, next) => {
+  try {
+    const { roleId } = req.user
+    const userRole = await Role.findOne({
+      where: {
+        id: roleId
+      },
+      raw: true,
+      nest: true
+    })
+    if (userRole.name !== 'User') {
+      warningLogger.warn(`authController/isUser: This user is not a valid User.`)
+      return res.status(401).send({
+        status: 'error',
+        message: 'No permission.'
+      })
+    }
+    next()
+  } catch (error) {
+    errorLogger.error(`auth/isUser: ${error}`)
+    return res.status(500).send({
+      status: 'error',
+      message: 'Authentication error'
+    })
+  }
+}
 
 module.exports = {
   isAuthenticated,
-  isAdmin
+  isAdmin,
+  isUser
 }
