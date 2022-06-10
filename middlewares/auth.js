@@ -5,7 +5,7 @@ const { warningLogger, errorLogger } = require('../utils/logger')
 
 const isAuthenticated = async (req, res, next) => {
   try {
-    const token = req.headers.authorization.replace(/['"]+/g, '')
+    const token = req.headers.authorization
     if (!token) {
       warningLogger.warn('auth/isAuthenticated: Token missing')
       return res.status(400).send({ status: 'error', message: 'Token missing' })
