@@ -1,23 +1,17 @@
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
-const { errorLogger } = require("../utils/logger")
+const { errorLogger, infoLogger } = require("../utils/logger")
 const User = require('../models/user')
 const Role = require('../models/role')
 const Area = require('../models/area')
 
 const userLogin = async (req, res) => {
   try {
-    const { email, password, repeatPassword } = req.body
+    const { email, password } = req.body
     if (!email.trim() || !password.trim()) {
       return res.status(401).send({
         status: 'error',
         message: 'Field cannot be blank!'
-      })
-    }
-    if (password !== repeatPassword) {
-      return res.status(401).send({
-        status: 'error',
-        message: "Passwords don't match!"
       })
     }
     const user = await User.findOne({
@@ -25,6 +19,12 @@ const userLogin = async (req, res) => {
       raw: true,
       nest: true
     })
+    if (!user) {
+      return res.status(400).send({
+        status: 'error',
+        message: 'This user does not exist!'
+      })
+    }
     const userPassword = user.password
     const isPasswordMatch = await bcrypt.compareSync(password, userPassword)
     if (!isPasswordMatch) {
@@ -56,7 +56,7 @@ const userLogin = async (req, res) => {
   }
 }
 
-async function getProfile(req, res) {
+const getProfile = async (req, res) => {
   try {
     const userId = req.user.id
     const user = await User.findByPk(userId, { nest: true, raw: true })
@@ -75,6 +75,35 @@ async function getProfile(req, res) {
     }
 
     return res.status(200).send(response)
+  } catch (error) {
+    errorLogger.error(`userController/getProfile: ${error}`)
+    return res.status(500).send({
+      status: 'error',
+      message: 'Unable to get user profile'
+    })
+  }
+}
+
+const editProfile = async (req, res) => {
+  try {
+    const { fullName, nickName, description } = req.body
+    const user = await User.findByPk(req.user.id)
+    if (!user) {
+      return res.status(400).send({
+        status: 'error',
+        message: 'This user does not exist!'
+      })
+    }
+    user.full_name = fullName
+    user.nick_name = nickName
+    user.description = description
+
+    await user.save()
+
+    return res.status(200).send({
+      status: 'success',
+      message: 'Updated user profile successfully!'
+    })
   } catch (error) {
     errorLogger.error(`userController/getProfile: ${error}`)
     return res.status(500).send({
@@ -124,5 +153,6 @@ async function test(req, res) {
 module.exports = {
   userLogin,
   getProfile,
+  editProfile,
   test
 }

@@ -1,10 +1,14 @@
 const express = require('express')
 const router = express.Router()
 const userController = require('../../controllers/userController')
-const { isAuthenticated, isAdmin } = require('../../middlewares/auth')
+const { isAuthenticated, isUser } = require('../../middlewares/auth')
 
 router.post('/login', userController.userLogin)
-router.get('/profile', userController.getProfile)
+router.route('/profile')
+  .all(isAuthenticated, isUser)
+  .get(userController.getProfile)
+  .put(userController.editProfile)
+
 router.get('/test', userController.test)
 
 module.exports = router
