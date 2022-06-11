@@ -6,6 +6,7 @@ const userController = require('../../controllers/userController')
 const { isAuthenticated, isUser } = require('../../middlewares/auth')
 
 router.post('/login', userController.userLogin)
+router.post('/register', userController.userRegister)
 
 router.route('/profile')
   .all(isAuthenticated, isUser)

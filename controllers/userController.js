@@ -5,6 +5,7 @@ const util = require('util')
 const { errorLogger } = require("../utils/logger")
 const User = require('../models/user')
 const s3ObjectStore = require('../service/s3')
+const { raw } = require('express')
 
 const userLogin = async (req, res) => {
   try {
@@ -53,6 +54,51 @@ const userLogin = async (req, res) => {
     return res.status(500).send({
       status: 'error',
       message: 'Unable to log in'
+    })
+  }
+}
+
+const userRegister = async (req, res) => {
+  try {
+    const { email, password, repeatPassword, fullName } = req.body
+    if (!email.trim() || !password.trim() || !repeatPassword.trim() || !fullName) {
+      return res.status(400).send({
+        status: 'error',
+        message: 'All fields are required!'
+      })
+    }
+    const user = await User.findOne({
+      where: { email }
+    }, { raw: true, nest: true })
+    if (user) {
+      return res.status(400).send({
+        status: 'error',
+        message: 'This email has been taken!'
+      })
+    }
+    if (password !== repeatPassword) {
+      return res.status(400).send({
+        status: 'error',
+        message: 'Passwords do not match!'
+      })
+    }
+    const salt = await bcrypt.genSalt(10)
+    const hash = await bcrypt.hash(password, salt)
+    await User.create({
+      email,
+      password: hash,
+      full_name: fullName
+    })
+
+    return res.status(200).send({
+      status: 'success',
+      message: 'Successfully created user!'
+    })
+  } catch (error) {
+    errorLogger.error(`userController/userRegister: ${error.stack}`)
+    return res.status(500).send({
+      status: 'error',
+      message: 'Unable to register new user'
     })
   }
 }
@@ -162,6 +208,7 @@ const getAvatar = async (req, res) => {
 }
 
 module.exports = {
+  userRegister,
   userLogin,
   getProfile,
   editProfile,
