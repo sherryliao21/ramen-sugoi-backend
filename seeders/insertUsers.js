@@ -30,18 +30,6 @@ const seedData = [
       description: 'user1',
       roleId: 2
     }
-  },
-  {
-    id: 3,
-    name: 'Banned',
-    user: {
-      full_name: 'test_user2',
-      nick_name: 'user2',
-      email: 'user2@example.com',
-      password: '$2a$10$JeI1Pvp0zjqNFCC7QC0S8euttQlr5P23NgZgD2M1UBKGdWOIGlQn.',
-      description: 'user2',
-      roleId: 3
-    }
   }
 ]
 

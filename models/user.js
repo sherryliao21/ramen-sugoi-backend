@@ -28,13 +28,13 @@ const User = ramenDB.define(
       type: DataTypes.STRING,
       allowNull: false
     },
-    profile_pic: {
-      type: DataTypes.STRING,
-      defaultValue: 'https://imgur.com/Wrdjiye.png'
-    },
     description: {
       type: DataTypes.TEXT,
       allowNull: true
+    },
+    isBanned: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false
     },
     roleId: {
       type: DataTypes.INTEGER,
