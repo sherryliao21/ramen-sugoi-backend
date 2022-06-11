@@ -13,6 +13,8 @@ router.route('/profile')
   .get(userController.getProfile)
   .put(userController.editProfile)
 
+router.put('/password', isAuthenticated, isUser, userController.updatePassword)
+
 router.route('/avatar')
   .all(isAuthenticated, isUser)
   .get(userController.getAvatar)

@@ -32,7 +32,7 @@ const userLogin = async (req, res) => {
     if (!isPasswordMatch) {
       return res.status(401).send({
         status: 'error',
-        message: 'Verification error!'
+        message: 'Wrong password!'
       })
     }
     const userPayload = {
@@ -155,8 +155,56 @@ const editProfile = async (req, res) => {
     errorLogger.error(`userController/getProfile: ${error}`)
     return res.status(500).send({
       status: 'error',
-      message: 'Unable to get user profile'
+      message: 'Unable to edit user profile'
     })
+  }
+}
+
+const updatePassword = async (req, res) => {
+  try {
+    const { currentPassword, newPassword, repeatPassword } = req.body
+    if (!currentPassword.trim() || !newPassword.trim() || !repeatPassword.trim()) {
+      return res.status(400).send({
+        status: 'error',
+        message: 'All fields are required!'
+      })
+    }
+    const user = await User.findByPk(req.user.id)
+    if (!user) {
+      return res.status(403).send({
+        status: 'error',
+        message: 'This user has no permission to update password'
+      })
+    }
+    const isPasswordMatch = await bcrypt.compare(currentPassword, user.password)
+    if (!isPasswordMatch) {
+      return res.status(400).send({
+        status: 'error',
+        message: 'Current password does not match old password!'
+      })
+    }
+    if (newPassword.trim() !== repeatPassword.trim()) {
+      return res.status(400).send({
+        status: 'error',
+        message: 'New passwords do not match!'
+      })
+    }
+    const salt = await bcrypt.genSalt(10)
+    const hash = await bcrypt.hash(newPassword.trim(), salt)
+    await user.update({
+      password: hash
+    })
+
+    return res.status(200).send({
+      status: 'success',
+      message: 'Updated user password successfully!'
+    })
+  } catch (error) {
+    errorLogger.error(`userController/updatePassword: ${error}`)
+    return res.status(500).send({
+      status: 'error',
+      message: 'Unable to update user password'
+    })    
   }
 }
 
@@ -227,6 +275,7 @@ const deleteAvatar = async (req, res) => {
 module.exports = {
   userRegister,
   userLogin,
+  updatePassword,
   getProfile,
   editProfile,
   uploadAvatar,
