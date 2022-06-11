@@ -5,20 +5,21 @@ const multer = require('multer')
 
 const upload = multer({ dest: 'uploads/' })
 const userController = require('../../controllers/userController')
+const profileController = require('../../controllers/profileController')
 const { isAuthenticated, isUser } = require('../../middlewares/auth')
 
 router.post('/login', userController.userLogin)
 router.post('/register', userController.userRegister)
 
-router.route('/profile').all(isAuthenticated, isUser).get(userController.getProfile).put(userController.editProfile)
-
 router.put('/password', isAuthenticated, isUser, userController.updatePassword)
+
+router.route('/profile').all(isAuthenticated, isUser).get(profileController.getProfile).put(profileController.editProfile)
 
 router
   .route('/avatar')
   .all(isAuthenticated, isUser)
-  .get(userController.getAvatar)
-  .post(upload.single('avatar'), userController.uploadAvatar)
-  .delete(userController.deleteAvatar)
+  .get(profileController.getAvatar)
+  .post(upload.single('avatar'), profileController.uploadAvatar)
+  .delete(profileController.deleteAvatar)
 
 module.exports = router
