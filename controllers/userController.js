@@ -207,11 +207,29 @@ const getAvatar = async (req, res) => {
   }
 }
 
+const deleteAvatar = async (req, res) => {
+    try {
+    await s3ObjectStore.deleteAvatar(req.user.id)
+
+    return res.status(200).send({
+      status: 'success',
+      message: 'Deleted user avatar successfully!'
+    })
+  } catch (error) {
+    errorLogger.error(`userController/deleteAvatar: ${error}`)
+    return res.status(500).send({
+      status: 'error',
+      message: 'Unable to delete user avatar'
+    })
+  }
+}
+
 module.exports = {
   userRegister,
   userLogin,
   getProfile,
   editProfile,
   uploadAvatar,
-  getAvatar
+  getAvatar,
+  deleteAvatar
 }

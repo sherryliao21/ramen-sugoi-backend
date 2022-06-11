@@ -17,5 +17,6 @@ router.route('/avatar')
   .all(isAuthenticated, isUser)
   .get(userController.getAvatar)
   .post(upload.single('avatar'), userController.uploadAvatar)
+  .delete(userController.deleteAvatar)
 
 module.exports = router

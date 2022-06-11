@@ -1,7 +1,7 @@
 if (process.env.ENV !== 'production') {
   require('dotenv').config()
 }
-const { S3Client, PutObjectCommand, GetObjectCommand } = require('@aws-sdk/client-s3')
+const { S3Client, PutObjectCommand, GetObjectCommand, DeleteObjectCommand } = require('@aws-sdk/client-s3')
 const fs = require('fs')
 const { errorLogger, infoLogger } = require('../utils/logger')
 const REGION = process.env.S3_REGION
@@ -56,8 +56,23 @@ const getAvatar = async (userId) => {
   }
 }
 
+const deleteAvatar = async (userId) => {
+  try {
+    const params = {
+      Bucket: process.env.S3_BUCKET_HOST, 
+      Key: `avatar/user${userId.toString()}_avatar`
+    }
+    const data = await s3Client.send(new DeleteObjectCommand(params))
+
+    return data
+  } catch (error) {
+    errorLogger.error(`service/s3/getAvatar: ${error.stack}`)
+  }
+}
+
 
 module.exports = {
   uploadAvatar,
-  getAvatar
+  getAvatar,
+  deleteAvatar
 }
