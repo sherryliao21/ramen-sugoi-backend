@@ -1,9 +1,10 @@
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
-const { errorLogger, infoLogger } = require("../utils/logger")
+const fs = require('fs')
+const util = require('util')
+const { errorLogger } = require("../utils/logger")
 const User = require('../models/user')
-const Role = require('../models/role')
-const Area = require('../models/area')
+const s3ObjectStore = require('../service/s3')
 
 const userLogin = async (req, res) => {
   try {
@@ -113,46 +114,51 @@ const editProfile = async (req, res) => {
   }
 }
 
-async function test(req, res) {
+const uploadAvatar = async (req, res) => {
   try {
-    // await Role.create({
-    //   id: 1,
-    //   name: 'Admin'
-    // })
-    // await User.create(
-    //   {
-    //     full_name: 'test',
-    //     nick_name: 'test123',
-    //     email: 'test@example.com',
-    //     password: '$2y$10$88n.KjLN1kw1O8LLXFT96u6W950FgFNNtokFWyef6dNXsiNHXPclu',
-    //     description: 'test123123',
-    //     profile_pic: null,
-    //     isBanned: false,
-    //     roleId: 1
-    //   },
-    //   (err, docs) => {
-    //     if (err) throw err
-    //     console.log(docs)
-    //   }
-    // )
-    await Area.create({
-      id: 1,
-      name: 'Taipei'
+    if (!req.file) {
+      return res.status(400).send({
+        status: 'error',
+        message: 'File is missing'
+      })
+    }
+    const result = await s3ObjectStore.uploadAvatar(req.file, req.user.id)
+    // unlink file from fs so that uploads/ will be empty after done suploading to s3
+    const unlinkFile = util.promisify(fs.unlink)
+    await unlinkFile(req.file.path)
+
+    return res.status(200).json({
+      status: 'success',
+      message: 'Upload file successfully!',
+      result
     })
-    return res.status(200).send('ok!')
   } catch (error) {
-    errorLogger.error(`userController/test: ${error}`)
+    errorLogger.error(`userController/uploadAvatar: ${error}`)
     return res.status(500).send({
       status: 'error',
-      message: 'ERROR'
+      message: 'Unable to upload user avatar'
     })
   }
-  return res.status(200).send('ok!')
+}
+
+const getAvatar = async (req, res) => {
+  try {
+    const result = await s3ObjectStore.getAvatar(req.user.id)
+
+    return res.status(200).send(result)
+  } catch (error) {
+    errorLogger.error(`userController/getAvatar: ${error}`)
+    return res.status(500).send({
+      status: 'error',
+      message: 'Unable to get user avatar'
+    })
+  }
 }
 
 module.exports = {
   userLogin,
   getProfile,
   editProfile,
-  test
+  uploadAvatar,
+  getAvatar
 }
