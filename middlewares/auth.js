@@ -54,7 +54,7 @@ const isAdmin = async (req, res, next) => {
       nest: true
     })
     if (userRole.name !== 'Admin') {
-      warningLogger.warn(`authController/isAdmin: This user is not an admin.`)
+      warningLogger.warn('authController/isAdmin: This user is not an admin.')
       return res.status(401).send({
         status: 'error',
         message: 'No permission.'
@@ -81,7 +81,7 @@ const isUser = async (req, res, next) => {
       nest: true
     })
     if (userRole.name !== 'User') {
-      warningLogger.warn(`authController/isUser: This user is not a valid User.`)
+      warningLogger.warn('authController/isUser: This user is not a valid User.')
       return res.status(401).send({
         status: 'error',
         message: 'No permission.'

@@ -1,5 +1,6 @@
-const { infoLogger } = require('./utils/logger')
 const express = require('express')
+const { infoLogger } = require('./utils/logger')
+
 const app = express()
 if (process.env.ENV !== 'production') {
   require('dotenv').config()

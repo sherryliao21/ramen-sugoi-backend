@@ -12,7 +12,7 @@ const User = require('./user')
 
 ramenDB
   // Enable this to re-sync DB. CAUTIOUS: will drop all existing DBs
-  // .sync({ force: true }) 
+  // .sync({ force: true })
   .sync()
   .then(() => {
     infoLogger.info('[MariaDB] DB synced')

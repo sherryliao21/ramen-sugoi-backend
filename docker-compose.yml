@@ -8,7 +8,7 @@ services:
       context: ./
       dockerfile: Dockerfile
     ports:
-      - "3000:3000"
+      - '3000:3000'
     environment: # will replace .env variables
       - MDB_HOST=mariadb:3306
       - MDB_USERNAME=root
@@ -17,14 +17,14 @@ services:
       - ramen-network
     depends_on:
       - mariadb
-    command: ["./wait-for-it.sh", "mariadb:3308", "--", "node", "index.js"]
+    command: ['./wait-for-it.sh', 'mariadb:3308', '--', 'node', 'index.js']
     restart: always
 
   mariadb:
     image: mariadb:10.7.4
     container_name: ramen-mariaDB
     ports:
-      - "3308:3306"
+      - '3308:3306'
     environment:
       - MARIADB_ROOT_PASSWORD=password
     networks:

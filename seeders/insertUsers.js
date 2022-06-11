@@ -36,7 +36,7 @@ const seedData = [
 const insertSeedUsers = async (seeds) => {
   try {
     await ramenDB.transaction(async (t) => {
-      for (let seed of seeds) {
+      for (const seed of seeds) {
         await Role.create(seed, {
           include: [User],
           transaction: t

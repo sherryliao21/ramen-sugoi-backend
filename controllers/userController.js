@@ -2,10 +2,9 @@ const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
 const fs = require('fs')
 const util = require('util')
-const { errorLogger } = require("../utils/logger")
+const { errorLogger } = require('../utils/logger')
 const User = require('../models/user')
 const s3ObjectStore = require('../service/s3')
-const { raw } = require('express')
 
 const userLogin = async (req, res) => {
   try {
@@ -60,16 +59,21 @@ const userLogin = async (req, res) => {
 
 const userRegister = async (req, res) => {
   try {
-    const { email, password, repeatPassword, fullName } = req.body
+    const {
+      email, password, repeatPassword, fullName
+    } = req.body
     if (!email.trim() || !password.trim() || !repeatPassword.trim() || !fullName) {
       return res.status(400).send({
         status: 'error',
         message: 'All fields are required!'
       })
     }
-    const user = await User.findOne({
-      where: { email }
-    }, { raw: true, nest: true })
+    const user = await User.findOne(
+      {
+        where: { email }
+      },
+      { raw: true, nest: true }
+    )
     if (user) {
       return res.status(400).send({
         status: 'error',
@@ -204,7 +208,7 @@ const updatePassword = async (req, res) => {
     return res.status(500).send({
       status: 'error',
       message: 'Unable to update user password'
-    })    
+    })
   }
 }
 
@@ -243,7 +247,6 @@ const getAvatar = async (req, res) => {
       return res.status(200).send({
         defaultAvatar
       })
-
     }
     return res.status(200).send(result)
   } catch (error) {
@@ -256,7 +259,7 @@ const getAvatar = async (req, res) => {
 }
 
 const deleteAvatar = async (req, res) => {
-    try {
+  try {
     await s3ObjectStore.deleteAvatar(req.user.id)
 
     return res.status(200).send({

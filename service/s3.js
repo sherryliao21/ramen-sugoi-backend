@@ -1,9 +1,12 @@
 if (process.env.ENV !== 'production') {
   require('dotenv').config()
 }
-const { S3Client, PutObjectCommand, GetObjectCommand, DeleteObjectCommand } = require('@aws-sdk/client-s3')
+const {
+  S3Client, PutObjectCommand, GetObjectCommand, DeleteObjectCommand
+} = require('@aws-sdk/client-s3')
 const fs = require('fs')
 const { errorLogger, infoLogger } = require('../utils/logger')
+
 const REGION = process.env.S3_REGION
 const s3Client = new S3Client({ region: REGION })
 
@@ -27,7 +30,7 @@ const uploadAvatar = async (file, userId) => {
     const stream = fs.createReadStream(file.path)
 
     const params = {
-      Bucket: process.env.S3_BUCKET_HOST, 
+      Bucket: process.env.S3_BUCKET_HOST,
       Key: `avatar/user${userId.toString()}_avatar`,
       Body: stream,
       ACL: 'public-read'
@@ -44,7 +47,7 @@ const uploadAvatar = async (file, userId) => {
 const getAvatar = async (userId) => {
   try {
     const params = {
-      Bucket: process.env.S3_BUCKET_HOST, 
+      Bucket: process.env.S3_BUCKET_HOST,
       Key: `avatar/user${userId.toString()}_avatar`
     }
     const data = await s3Client.send(new GetObjectCommand(params))
@@ -59,7 +62,7 @@ const getAvatar = async (userId) => {
 const deleteAvatar = async (userId) => {
   try {
     const params = {
-      Bucket: process.env.S3_BUCKET_HOST, 
+      Bucket: process.env.S3_BUCKET_HOST,
       Key: `avatar/user${userId.toString()}_avatar`
     }
     const data = await s3Client.send(new DeleteObjectCommand(params))
@@ -69,7 +72,6 @@ const deleteAvatar = async (userId) => {
     errorLogger.error(`service/s3/getAvatar: ${error.stack}`)
   }
 }
-
 
 module.exports = {
   uploadAvatar,

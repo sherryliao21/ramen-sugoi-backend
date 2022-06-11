@@ -43,13 +43,13 @@ const seedRestaurants = [
 const insertSeedRestaurants = async (areas, categories, restaurants) => {
   try {
     await ramenDB.transaction(async (t) => {
-      for (let area of areas) {
+      for (const area of areas) {
         await Area.create(area, { transaction: t })
       }
-      for (let category of categories) {
+      for (const category of categories) {
         await Category.create(category, { transaction: t })
       }
-      for (let restaurant of restaurants) {
+      for (const restaurant of restaurants) {
         await Restaurant.create(restaurant, { transaction: t })
       }
     })
