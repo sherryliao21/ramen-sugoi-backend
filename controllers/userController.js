@@ -123,7 +123,7 @@ const uploadAvatar = async (req, res) => {
       })
     }
     const result = await s3ObjectStore.uploadAvatar(req.file, req.user.id)
-    // unlink file from fs so that uploads/ will be empty after done suploading to s3
+    // unlink file from fs so that uploads/ will be empty after done uploading to s3
     const unlinkFile = util.promisify(fs.unlink)
     await unlinkFile(req.file.path)
 
@@ -144,7 +144,13 @@ const uploadAvatar = async (req, res) => {
 const getAvatar = async (req, res) => {
   try {
     const result = await s3ObjectStore.getAvatar(req.user.id)
+    if (!result) {
+      const defaultAvatar = 'https://imgur.com/Wrdjiye.png'
+      return res.status(200).send({
+        defaultAvatar
+      })
 
+    }
     return res.status(200).send(result)
   } catch (error) {
     errorLogger.error(`userController/getAvatar: ${error}`)

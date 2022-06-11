@@ -6,6 +6,7 @@ const userController = require('../../controllers/userController')
 const { isAuthenticated, isUser } = require('../../middlewares/auth')
 
 router.post('/login', userController.userLogin)
+
 router.route('/profile')
   .all(isAuthenticated, isUser)
   .get(userController.getProfile)
@@ -13,7 +14,7 @@ router.route('/profile')
 
 router.route('/avatar')
   .all(isAuthenticated, isUser)
-  .post(upload.single('avatar'), userController.uploadAvatar)
   .get(userController.getAvatar)
+  .post(upload.single('avatar'), userController.uploadAvatar)
 
 module.exports = router
