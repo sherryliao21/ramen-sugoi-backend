@@ -10,7 +10,8 @@ const Rating = ramenDB.define(
       type: DataTypes.INTEGER,
       allowNull: false,
       primaryKey: true,
-      unique: true
+      unique: true,
+      autoIncrement: true
     },
     stars: {
       type: DataTypes.INTEGER
