@@ -8,7 +8,8 @@ const Followship = ramenDB.define(
       type: DataTypes.INTEGER,
       allowNull: false,
       primaryKey: true,
-      unique: true
+      unique: true,
+      autoIncrement: true
     },
     followerId: {
       type: DataTypes.INTEGER
@@ -16,8 +17,7 @@ const Followship = ramenDB.define(
     followingId: {
       type: DataTypes.INTEGER
     }
-  },
-  { paranoid: true }
+  }
 )
 
 module.exports = Followship
