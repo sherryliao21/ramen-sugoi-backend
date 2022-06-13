@@ -1,3 +1,21 @@
+// for morgan (request logs)
+const morgan = require('morgan')
+const jwt = require('jsonwebtoken')
+
+morgan.token('id', (req, res) => {
+  const jwtSecret = process.env.JWT_SECRET
+  const userToken = req.headers.authorization
+  if (!userToken) {
+    return 'N/A'
+  }
+  const decoded = jwt.verify(userToken, jwtSecret)
+  const userId = decoded.id
+
+  return userId
+})
+
+const logRequest = morgan(':date[iso] userId::id :method :url :status :total-time ms')
+
 // for winston (system/application logs)
 const winston = require('winston')
 const {
@@ -105,5 +123,6 @@ module.exports = {
   warningLogger,
   errorLogger,
   infoLogger,
-  debugLogger
+  debugLogger,
+  logRequest
 }

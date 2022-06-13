@@ -1,5 +1,5 @@
 const express = require('express')
-const { infoLogger } = require('./utils/logger')
+const { infoLogger, logRequest } = require('./utils/logger')
 
 const app = express()
 if (process.env.ENV !== 'production') {
@@ -12,6 +12,7 @@ const routes = require('./routes/index')
 
 app.use(express.json())
 app.use(express.urlencoded({ extended: false }))
+app.use(logRequest)
 app.use(routes)
 
 app.listen(PORT, () => {
