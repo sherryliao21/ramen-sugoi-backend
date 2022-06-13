@@ -10,7 +10,8 @@ const Favorite = ramenDB.define(
       type: DataTypes.INTEGER,
       allowNull: false,
       primaryKey: true,
-      unique: true
+      unique: true,
+      autoIncrement: true
     },
     userId: {
       type: DataTypes.INTEGER
@@ -18,8 +19,7 @@ const Favorite = ramenDB.define(
     restaurantId: {
       type: DataTypes.INTEGER
     }
-  },
-  { paranoid: true }
+  }
 )
 
 Restaurant.belongsToMany(User, {
