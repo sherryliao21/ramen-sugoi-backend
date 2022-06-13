@@ -43,15 +43,9 @@ const seedRestaurants = [
 const insertSeedRestaurants = async (areas, categories, restaurants) => {
   try {
     await ramenDB.transaction(async (t) => {
-      for (const area of areas) {
-        await Area.create(area, { transaction: t })
-      }
-      for (const category of categories) {
-        await Category.create(category, { transaction: t })
-      }
-      for (const restaurant of restaurants) {
-        await Restaurant.create(restaurant, { transaction: t })
-      }
+      await Area.bulkCreate(areas, { transaction: t })
+      await Category.bulkCreate(categories, { transaction: t })
+      await Restaurant.bulkCreate(restaurants, { transaction: t })
     })
 
     infoLogger.info('seeders/insertRestaurants: Successfully added seed restaurants!')
