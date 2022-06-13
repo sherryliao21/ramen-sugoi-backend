@@ -21,6 +21,19 @@ const followUser = async (req, res) => {
         message: 'This user does not exist'
       })
     }
+    const followship = await Followship.findOne({
+      where: {
+        followingId: followingUserId,
+        followerId: user.id
+      }
+    })
+    if (followship) {
+      warningLogger.warn('followshipController/followUser: You already followed this user.')
+      return res.status(400).send({
+        status: 'error',
+        message: 'You already followed this user'
+      })
+    }
     await Followship.create({
       followingId: followingUserId,
       followerId: user.id
@@ -64,6 +77,13 @@ const unfollowUser = async (req, res) => {
         followerId: user.id
       }
     })
+    if (!followship) {
+      warningLogger.warn('followshipController/followUser: You never followed this user.')
+      return res.status(400).send({
+        status: 'error',
+        message: 'You never followed this user'
+      })
+    }
     await followship.destroy()
     infoLogger.info(`followshipController/followUser: Unfollowed userId: ${followingUserId} successfully!`)
     return res.status(200).send({
