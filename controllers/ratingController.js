@@ -28,10 +28,17 @@ const rateRestaurant = async (req, res) => {
         message: 'You already rated this restaurant'
       })
     }
+    if (parseInt(stars, 10) > 5 || parseInt(stars, 10) <= 0) {
+      warningLogger.warn('ratingController/rateRestaurant: Invalid rating')
+      return res.status(400).send({
+        status: 'error',
+        message: 'Invalid rating'
+      })
+    }
     await Rating.create({
       authorId: userId,
       restaurantId,
-      stars: parseInt(stars)
+      stars: parseInt(stars, 10)
     })
     infoLogger.info(`ratingController/rateRestaurant: Rated restaurantId: ${restaurantId} successfully!`)
     return res.status(200).send({
@@ -73,7 +80,14 @@ const editRestaurantRating = async (req, res) => {
         message: 'You never rated this restaurant'
       })
     }
-    rating.stars = parseInt(stars)
+    if (parseInt(stars, 10) > 5 || parseInt(stars, 10) <= 0) {
+      warningLogger.warn('ratingController/editRestaurantRating: Invalid rating')
+      return res.status(400).send({
+        status: 'error',
+        message: 'Invalid rating'
+      })
+    }
+    rating.stars = parseInt(stars, 10)
     await rating.save()
     infoLogger.info(`ratingController/editRestaurantRating: Updated restaurantId: ${restaurantId} rating successfully!`)
     return res.status(200).send({
@@ -85,7 +99,7 @@ const editRestaurantRating = async (req, res) => {
     return res.status(500).send({
       status: 'error',
       message: 'Unable to update restaurant rating'
-    })    
+    })
   }
 }
 

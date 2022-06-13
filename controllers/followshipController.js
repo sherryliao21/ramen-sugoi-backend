@@ -4,7 +4,7 @@ const { infoLogger, errorLogger, warningLogger } = require('../utils/logger')
 
 const followUser = async (req, res) => {
   try {
-    const user = req.user
+    const { user } = req
     const followingUserId = req.params.userId
     if (user.id.toString() === followingUserId.toString()) {
       warningLogger.warn('followshipController/followUser: You cannot follow yourself.')
@@ -54,7 +54,7 @@ const followUser = async (req, res) => {
 
 const unfollowUser = async (req, res) => {
   try {
-    const user = req.user
+    const { user } = req
     const followingUserId = req.params.userId
     if (user.id.toString() === followingUserId.toString()) {
       warningLogger.warn('followshipController/unfollowUser: You cannot unfollow yourself.')
@@ -95,7 +95,7 @@ const unfollowUser = async (req, res) => {
     return res.status(500).send({
       status: 'error',
       message: 'Unable to unfollow user'
-    })    
+    })
   }
 }
 
