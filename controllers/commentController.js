@@ -121,8 +121,31 @@ const deleteComment =async (req, res) => {
   }
 }
 
+const getLatestComments = async (req, res) => {
+  try {
+    const comments = await Comment.findAll({
+      order: [['createdAt', 'DESC']],
+      raw: true,
+      nest: true,
+      attributes: ['id', 'authorId', 'restaurantId', 'content', 'visibility', 'createdAt']
+    })
+    return res.status(200).send({
+      status: 'success',
+      message: 'Retrieved a list of latest comments',
+      comments
+    })
+  } catch (error) {
+    errorLogger.error(`commentController/getLatestComments: ${error.stack}`)
+    return res.status(500).send({
+      status: 'error',
+      message: 'Unable to get latest comments'
+    }) 
+  }
+}
+
 module.exports = {
   postComment,
   editComment,
-  deleteComment
+  deleteComment,
+  getLatestComments
 }
