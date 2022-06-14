@@ -34,4 +34,16 @@ const Comment = ramenDB.define(
 Comment.belongsTo(Restaurant)
 Comment.belongsTo(User)
 
+Restaurant.belongsToMany(User, {
+  through: Comment,
+  as: 'CommentAuthors',
+  foreignKey: 'authorId'
+})
+
+User.belongsToMany(Restaurant, {
+  through: Comment,
+  as: 'CommentedRestaurants',
+  foreignKey: 'restaurantId'
+})
+
 module.exports = Comment
