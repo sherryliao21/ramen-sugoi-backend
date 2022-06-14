@@ -97,8 +97,47 @@ const isUser = async (req, res, next) => {
   }
 }
 
+const isNotBanned = async (req, res, next) => {
+  try {
+    const { roleId } = req.user
+    const userRole = await Role.findOne({
+      where: {
+        id: roleId
+      },
+      raw: true,
+      nest: true
+    })
+    if (userRole.name !== 'User') {
+      warningLogger.warn('authController/isNotBanned: This user is not a valid User.')
+      return res.status(401).send({
+        status: 'error',
+        message: 'No permission.'
+      })
+    }
+    const userId = req.user.id
+    const user = await User.findByPk(userId, {
+      raw: true, nest: true
+    })
+    if (user.isBanned) {
+      warningLogger.warn('authController/isNotBanned: This user is banned.')
+      return res.status(401).send({
+        status: 'error',
+        message: 'No permission.'
+      })
+    }
+    next()
+  } catch (error) {
+    errorLogger.error(`auth/isNotBanned: ${error}`)
+    return res.status(500).send({
+      status: 'error',
+      message: 'Authentication error'
+    })
+  }
+}
+
 module.exports = {
   isAuthenticated,
   isAdmin,
-  isUser
+  isUser,
+  isNotBanned
 }
