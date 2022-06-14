@@ -90,7 +90,8 @@ const uploadAvatar = async (req, res) => {
 
 const getAvatar = async (req, res) => {
   try {
-    const result = await s3ObjectStore.getAvatar(req.user.id)
+    const { userId } = req.params
+    const result = await s3ObjectStore.getAvatar(userId)
     if (!result) {
       const defaultAvatar = 'https://imgur.com/Wrdjiye.png'
       return res.status(200).send({
