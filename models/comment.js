@@ -10,7 +10,8 @@ const Comment = ramenDB.define(
       type: DataTypes.INTEGER,
       allowNull: false,
       primaryKey: true,
-      unique: true
+      unique: true,
+      autoIncrement: true
     },
     content: {
       type: DataTypes.TEXT
@@ -25,20 +26,12 @@ const Comment = ramenDB.define(
     restaurantId: {
       type: DataTypes.INTEGER
     }
-  },
-  { paranoid: true }
+  }, {
+    paranoid: true
+  }
 )
 
-Restaurant.belongsToMany(User, {
-  through: Comment,
-  as: 'Commenter',
-  foreignKey: 'authorId'
-})
-
-User.belongsToMany(Restaurant, {
-  through: Comment,
-  as: 'CommentedRestaurants',
-  foreignKey: 'restaurantId'
-})
+Comment.belongsTo(Restaurant)
+Comment.belongsTo(User)
 
 module.exports = Comment
