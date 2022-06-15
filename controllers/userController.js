@@ -1,7 +1,11 @@
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
+const { Op } = require('sequelize')
 const { errorLogger } = require('../utils/logger')
 const User = require('../models/user')
+const Rating = require('../models/rating')
+const Restaurant = require('../models/restaurant')
+const Favorite = require('../models/favorite')
 
 const userLogin = async (req, res) => {
   try {
@@ -56,9 +60,7 @@ const userLogin = async (req, res) => {
 
 const userRegister = async (req, res) => {
   try {
-    const {
-      email, password, repeatPassword, fullName
-    } = req.body
+    const { email, password, repeatPassword, fullName } = req.body
     if (!email.trim() || !password.trim() || !repeatPassword.trim() || !fullName) {
       return res.status(400).send({
         status: 'error',
@@ -152,8 +154,30 @@ const updatePassword = async (req, res) => {
   }
 }
 
+const getTopUsers = async (req, res) => {
+  try {
+    const users = await User.findAll({
+      where: {
+        roleId: {
+          [Op.ne]: 1
+        }
+      },
+      attributes: ['id', 'nick_name', 'description', 'isBanned'],
+      include: { all: true }
+    })
+    return res.status(200).send(users)
+  } catch (error) {
+    errorLogger.error(`userController/getTopUsers: ${error}`)
+    return res.status(500).send({
+      status: 'error',
+      message: 'Unable to get users'
+    })
+  }
+}
+
 module.exports = {
   userRegister,
   userLogin,
-  updatePassword
+  updatePassword,
+  getTopUsers
 }
