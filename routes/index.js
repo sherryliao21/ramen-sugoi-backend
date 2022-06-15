@@ -8,7 +8,7 @@ const following = require('./modules/following')
 const favorite = require('./modules/favorite')
 const rating = require('./modules/rating')
 const comments = require('./modules/comments')
-const restaurants = require('./modules/restaurants')
+// const restaurants = require('./modules/restaurants')
 const { isAuthenticated, isUser, isNotBanned } = require('../middlewares/auth')
 
 router.use(`${baseURL}/user`, user)
@@ -17,6 +17,6 @@ router.use(`${baseURL}/following`, isAuthenticated, isUser, following)
 router.use(`${baseURL}/favorite`, isAuthenticated, isUser, favorite)
 router.use(`${baseURL}/rating`, isAuthenticated, isUser, rating)
 router.use(`${baseURL}/comments`, isAuthenticated, isUser, isNotBanned, comments)
-router.use(`${baseURL}/restaurants`, isAuthenticated, isUser, restaurants)
+// router.use(`${baseURL}/restaurants`, isAuthenticated, isUser, restaurants)
 
 module.exports = router

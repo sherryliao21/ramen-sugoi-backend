@@ -154,7 +154,7 @@ const updatePassword = async (req, res) => {
   }
 }
 
-const getTopUsers = async (req, res) => {
+const getTop10Users = async (req, res) => {
   try {
     const users = await User.findAll({
       where: {
@@ -163,9 +163,25 @@ const getTopUsers = async (req, res) => {
         }
       },
       attributes: ['id', 'nick_name', 'description', 'isBanned'],
-      include: { all: true }
+      include: { model: User, as: 'Followers' }
     })
-    return res.status(200).send(users)
+    const result = users.map((user) => {
+      const response = {
+        id: 2,
+        nick_name: user.nick_name,
+        description: user.description,
+        isBanned: user.isBanned,
+        followerCount: user.Followers.length
+      }
+      return response
+    })
+    const sorted = result
+      .sort((a, b) => {
+        return b.followerCount - a.followerCount
+      })
+      .slice(0, 10)
+
+    return res.status(200).send(sorted)
   } catch (error) {
     errorLogger.error(`userController/getTopUsers: ${error}`)
     return res.status(500).send({
@@ -179,5 +195,5 @@ module.exports = {
   userRegister,
   userLogin,
   updatePassword,
-  getTopUsers
+  getTop10Users
 }
