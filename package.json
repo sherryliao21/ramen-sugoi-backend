@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node index.js",
     "dev": "nodemon index.js",
-    "seed": "node ./seeders/insertUsers.js && node ./seeders/insertRestaurants.js",
+    "seed": "node ./seeders/insertUsers.js && node ./seeders/insertRestaurants.js && node ./seeders/insertUserActivities.js",
     "format": "npx prettier --write .",
     "lint": "npx eslint --fix .",
     "test": "echo \"Error: no test specified\" && exit 1"

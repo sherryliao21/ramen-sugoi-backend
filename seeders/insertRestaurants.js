@@ -6,6 +6,9 @@ const ramenDB = require('../databases/mariaDB')
 const Category = require('../models/category')
 const Area = require('../models/area')
 const Restaurant = require('../models/restaurant')
+const Rating = require('../models/rating')
+const Comment = require('../models/comment')
+const Favorite = require('../models/favorite')
 const { infoLogger, errorLogger } = require('../utils/logger')
 
 const seedCategories = [
