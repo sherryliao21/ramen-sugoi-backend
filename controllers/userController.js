@@ -154,17 +154,20 @@ const updatePassword = async (req, res) => {
   }
 }
 
-const getTop10Users = async (req, res) => {
+const getTop10PopularUsers = async (req, res) => {
   try {
     const users = await User.findAll({
       where: {
         roleId: {
-          [Op.ne]: 1
+          [Op.ne]: 1  // exclude admin
         }
       },
       attributes: ['id', 'nick_name', 'description', 'isBanned'],
       include: { model: User, as: 'Followers' }
     })
+    if (!users.length) {
+      return res.status(200).send([])
+    }
     const result = users.map((user) => {
       const response = {
         id: 2,
@@ -183,10 +186,10 @@ const getTop10Users = async (req, res) => {
 
     return res.status(200).send(sorted)
   } catch (error) {
-    errorLogger.error(`userController/getTopUsers: ${error}`)
+    errorLogger.error(`userController/getTop10PopularUsers: ${error}`)
     return res.status(500).send({
       status: 'error',
-      message: 'Unable to get users'
+      message: 'Unable to get top 10 popular users'
     })
   }
 }
@@ -195,5 +198,5 @@ module.exports = {
   userRegister,
   userLogin,
   updatePassword,
-  getTop10Users
+  getTop10PopularUsers
 }

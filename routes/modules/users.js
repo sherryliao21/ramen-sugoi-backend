@@ -5,6 +5,6 @@ const multer = require('multer')
 
 const userController = require('../../controllers/userController')
 
-router.get('/', userController.getTop10Users)
+router.get('/', userController.getTop10PopularUsers)
 
 module.exports = router
