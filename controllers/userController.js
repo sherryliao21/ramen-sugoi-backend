@@ -3,9 +3,8 @@ const jwt = require('jsonwebtoken')
 const { Op } = require('sequelize')
 const { errorLogger } = require('../utils/logger')
 const User = require('../models/user')
-const Rating = require('../models/rating')
+const Comment = require('../models/comment')
 const Restaurant = require('../models/restaurant')
-const Favorite = require('../models/favorite')
 
 const userLogin = async (req, res) => {
   try {
@@ -154,8 +153,21 @@ const updatePassword = async (req, res) => {
   }
 }
 
-const getTop10PopularUsers = async (req, res) => {
+const getTop10UsersByCategory = async (req, res) => {
   try {
+    const modelConfig = {
+      active: {
+        model: Restaurant,
+        tableName: 'CommentedRestaurants',
+        count: 'commentCount'
+      },
+      popular: {
+        model: User,
+        tableName: 'Followers',
+        count: 'followerCount'
+      }
+    }
+    const { category } = req.params
     const users = await User.findAll({
       where: {
         roleId: {
@@ -163,33 +175,37 @@ const getTop10PopularUsers = async (req, res) => {
         }
       },
       attributes: ['id', 'nick_name', 'description', 'isBanned'],
-      include: { model: User, as: 'Followers' }
+      include: { model: modelConfig[category].model, as: modelConfig[category].tableName },
+      nest: true
     })
     if (!users.length) {
       return res.status(200).send([])
     }
     const result = users.map((user) => {
-      const response = {
-        id: 2,
-        nick_name: user.nick_name,
-        description: user.description,
-        isBanned: user.isBanned,
-        followerCount: user.Followers.length
+      if (!user.isBanned) {
+        const response = {
+          id: 2,
+          nick_name: user.nick_name,
+          description: user.description,
+          isBanned: user.isBanned,
+          [modelConfig[category].count]: user[modelConfig[category].tableName].length
+        }
+        return response
       }
-      return response
     })
     const sorted = result
       .sort((a, b) => {
-        return b.followerCount - a.followerCount
+        return b[modelConfig[category].count] - a[modelConfig[category].count]
       })
       .slice(0, 10)
 
     return res.status(200).send(sorted)
   } catch (error) {
-    errorLogger.error(`userController/getTop10PopularUsers: ${error}`)
+    const { category } = req.params
+    errorLogger.error(`userController/getTop10UsersByCategory: ${error.stack}`)
     return res.status(500).send({
       status: 'error',
-      message: 'Unable to get top 10 popular users'
+      message: `Unable to get top 10 ${category} users`
     })
   }
 }
@@ -198,5 +214,5 @@ module.exports = {
   userRegister,
   userLogin,
   updatePassword,
-  getTop10PopularUsers
+  getTop10UsersByCategory
 }
