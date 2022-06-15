@@ -22,13 +22,13 @@ const Favorite = ramenDB.define('favorite', {
 Restaurant.belongsToMany(User, {
   through: Favorite,
   as: 'LikedUsers',
-  foreignKey: 'userId'
+  foreignKey: 'restaurantId'
 })
 
 User.belongsToMany(Restaurant, {
   through: Favorite,
   as: 'LikedRestaurants',
-  foreignKey: 'restaurantId'
+  foreignKey: 'userId'
 })
 
 module.exports = Favorite

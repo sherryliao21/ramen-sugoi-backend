@@ -29,13 +29,13 @@ const Rating = ramenDB.define(
 Restaurant.belongsToMany(User, {
   through: Rating,
   as: 'RatingAuthors',
-  foreignKey: 'authorId'
+  foreignKey: 'restaurantId'
 })
 
 User.belongsToMany(Restaurant, {
   through: Rating,
   as: 'RatedRestaurants',
-  foreignKey: 'restaurantId'
+  foreignKey: 'authorId'
 })
 
 module.exports = Rating

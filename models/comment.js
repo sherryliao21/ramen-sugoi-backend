@@ -37,13 +37,13 @@ Comment.belongsTo(User)
 Restaurant.belongsToMany(User, {
   through: Comment,
   as: 'CommentAuthors',
-  foreignKey: 'authorId'
+  foreignKey: 'restaurantId'
 })
 
 User.belongsToMany(Restaurant, {
   through: Comment,
   as: 'CommentedRestaurants',
-  foreignKey: 'restaurantId'
+  foreignKey: 'authorId'
 })
 
 module.exports = Comment
