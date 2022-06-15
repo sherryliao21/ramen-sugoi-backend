@@ -43,7 +43,7 @@ const rateRestaurant = async (req, res) => {
     infoLogger.info(`ratingController/rateRestaurant: Rated restaurantId: ${restaurantId} successfully!`)
     return res.status(200).send({
       status: 'success',
-      message: `Liked restaurantId: ${restaurantId} successfully!`
+      message: `Rated restaurantId: ${restaurantId} successfully!`
     })
   } catch (error) {
     errorLogger.error(`ratingController/rateRestaurant: ${error.stack}`)
