@@ -181,17 +181,15 @@ const getTop10UsersByCategory = async (req, res) => {
     if (!users.length) {
       return res.status(200).send([])
     }
-    const result = users.map((user) => {
-      if (!user.isBanned) {
-        const response = {
-          id: 2,
-          nick_name: user.nick_name,
-          description: user.description,
-          isBanned: user.isBanned,
-          [modelConfig[category].count]: user[modelConfig[category].tableName].length
-        }
-        return response
+    const result = users.filter(user => !user.isBanned).map((user) => {
+      const response = {
+        id: 2,
+        nick_name: user.nick_name,
+        description: user.description,
+        isBanned: user.isBanned,
+        [modelConfig[category].count]: user[modelConfig[category].tableName].length
       }
+      return response  
     })
     const sorted = result
       .sort((a, b) => {
