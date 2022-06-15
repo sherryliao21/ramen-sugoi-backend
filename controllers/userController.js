@@ -1,7 +1,7 @@
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
 const { Op } = require('sequelize')
-const { errorLogger } = require('../utils/logger')
+const { errorLogger, warningLogger } = require('../utils/logger')
 const User = require('../models/user')
 const Comment = require('../models/comment')
 const Restaurant = require('../models/restaurant')
@@ -210,9 +210,51 @@ const getTop10UsersByCategory = async (req, res) => {
   }
 }
 
+const getUser = async (req, res) => {
+  try {
+    const { userId } = req.params
+    const user = await User.findOne({
+      where: {
+        id: userId,
+        roleId: {
+          [Op.ne]: 1
+        },
+        isBanned: {
+          [Op.ne]: 1
+        }
+      },
+      attributes: ['id', 'nick_name', 'description', 'createdAt'],
+      include: [{
+        model: User, as: 'Followers',
+        attributes: ['id', 'nick_name']
+      },
+      {
+        model: User, as: 'Followings',
+        attributes: ['id', 'nick_name']
+      }],
+      nest: true
+    })
+    if (!user) {
+      warningLogger.warn('This user does not exist')
+      return res.status(400).send({
+        status: 'error',
+        message: 'This user does not exist'
+      })
+    }
+    return res.status(200).send(user)
+  } catch (error) {
+    errorLogger.error(`userController/getUser: ${error.stack}`)
+    return res.status(500).send({
+      status: 'error',
+      message: `Unable to get user`
+    })
+  }
+}
+
 module.exports = {
   userRegister,
   userLogin,
   updatePassword,
-  getTop10UsersByCategory
+  getTop10UsersByCategory,
+  getUser
 }
