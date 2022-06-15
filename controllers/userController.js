@@ -222,14 +222,24 @@ const getUser = async (req, res) => {
         }
       },
       attributes: ['id', 'nick_name', 'description', 'createdAt'],
-      include: [{
-        model: User, as: 'Followers',
-        attributes: ['id', 'nick_name']
-      },
-      {
-        model: User, as: 'Followings',
-        attributes: ['id', 'nick_name']
-      }],
+      include: [
+        {
+          model: User, as: 'Followers',
+          attributes: ['id', 'nick_name']
+        },
+        {
+          model: User, as: 'Followings',
+          attributes: ['id', 'nick_name']
+        },
+        {
+          model: Restaurant, as: 'CommentedRestaurants',
+          attributes: ['id', 'name']
+        },
+        {
+          model: Restaurant, as: 'LikedRestaurants',
+          attributes: ['id', 'name']
+        }
+      ],
       nest: true
     })
     if (!user) {
