@@ -1,4 +1,4 @@
-const { Restaurant, User, Rating, Comment } = require('../models/index')
+const { Restaurant, Category, Area, User, Rating, Comment } = require('../models/index')
 const { errorLogger, warningLogger } = require('../utils/logger')
 
 const getRestaurants = async (req, res) => {
@@ -29,7 +29,6 @@ const getRestaurant = async (req, res) => {
   try {
     const { restaurantId } = req.params
     const restaurant = await Restaurant.findByPk(restaurantId, {
-      raw: true,
       nest: true,
       attributes: ['id', 'name', 'profile_pic', 'description', 'address', 'categoryId', 'areaId'],
       include: [
@@ -44,7 +43,31 @@ const getRestaurant = async (req, res) => {
         message: 'This restaurant does not exist'
       })
     }
-    return res.status(200).send(restaurant)
+    const category = await Category.findByPk(restaurant.categoryId, {
+      raw: true,
+      nest: true,
+      attributes: ['name']
+    })
+    const area = await Area.findByPk(restaurant.areaId, {
+      raw: true,
+      nest: true,
+      attributes: ['name']
+    })
+    const response = [restaurant].map((data) => {
+      const result = {
+        id: data.id,
+        name: data.name,
+        profilePic: data.profile_pic,
+        description: data.description,
+        address: data.address,
+        category: category.name,
+        area: area.name,
+        ratingCount: restaurant.RatingAuthors.length,
+        commentCount: restaurant.CommentAuthors.length
+      }
+      return result
+    })
+    return res.status(200).send(response)
   } catch (error) {
     errorLogger.error(`restaurantController/getRestaurant: ${error.stack}`)
     return res.status(500).send({

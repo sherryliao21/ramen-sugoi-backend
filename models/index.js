@@ -78,6 +78,13 @@ User.belongsToMany(Restaurant, {
   constraints: false
 })
 
+Rating.belongsTo(Restaurant, {
+  constraints: false
+})
+Rating.belongsTo(User, {
+  constraints: false
+})
+
 Restaurant.belongsToMany(User, {
   through: Rating,
   as: 'RatingAuthors',
