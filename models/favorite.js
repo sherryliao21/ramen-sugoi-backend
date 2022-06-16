@@ -33,6 +33,23 @@ User.belongsToMany(Restaurant, {
   constraints: false
 })
 
+const getFavorite = async (userId, restaurantId) => {
+  const data = await Favorite.findOne({
+    where: {
+      userId, restaurantId
+    }
+  })
+  return data
+}
+
+const createFavorite = async (userId, restaurantId) => {
+  await Favorite.create({
+    userId, restaurantId
+  })
+}
+
 module.exports = {
-  Favorite
+  Favorite,
+  getFavorite,
+  createFavorite
 }
