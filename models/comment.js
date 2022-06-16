@@ -27,7 +27,8 @@ const Comment = ramenDB.define(
       type: DataTypes.INTEGER
     },
     commentCountOnSamePost: {
-      type: DataTypes.INTEGER
+      type: DataTypes.INTEGER,
+      defaultValue: 1
     }
   },
   {
