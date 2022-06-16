@@ -1,4 +1,6 @@
 const { Restaurant, Rating } = require('../models/index')
+const restaurantHelper = require('../models/restaurant')
+const ratingHelper = require('../models/rating')
 const { infoLogger, errorLogger, warningLogger } = require('../utils/logger')
 
 const rateRestaurant = async (req, res) => {
@@ -6,7 +8,7 @@ const rateRestaurant = async (req, res) => {
     const userId = req.user.id
     const { restaurantId } = req.params
     const { stars } = req.body
-    const restaurant = await Restaurant.findByPk(restaurantId)
+    const restaurant = await restaurantHelper.getRestaurantById(restaurantId)
     if (!restaurant) {
       warningLogger.warn('ratingController/rateRestaurant: This restaurant does not exist.')
       return res.status(400).send({
@@ -14,12 +16,7 @@ const rateRestaurant = async (req, res) => {
         message: 'This restaurant does not exist'
       })
     }
-    const rating = await Rating.findOne({
-      where: {
-        authorId: userId,
-        restaurantId
-      }
-    })
+    const rating = await ratingHelper.getRating(userId, restaurantId)
     if (rating) {
       warningLogger.warn('ratingController/rateRestaurant: You already rated this restaurant')
       return res.status(400).send({
@@ -34,11 +31,7 @@ const rateRestaurant = async (req, res) => {
         message: 'Invalid rating'
       })
     }
-    await Rating.create({
-      authorId: userId,
-      restaurantId,
-      stars: parseInt(stars, 10)
-    })
+    await ratingHelper.createRating(userId, restaurantId, stars)
     infoLogger.info(`ratingController/rateRestaurant: Rated restaurantId: ${restaurantId} successfully!`)
     return res.status(200).send({
       status: 'success',
@@ -58,7 +51,7 @@ const editRestaurantRating = async (req, res) => {
     const userId = req.user.id
     const { restaurantId } = req.params
     const { stars } = req.body
-    const restaurant = await Restaurant.findByPk(restaurantId)
+    const restaurant = await restaurantHelper.getRestaurantById(restaurantId)
     if (!restaurant) {
       warningLogger.warn('ratingController/editRestaurantRating: This restaurant does not exist.')
       return res.status(400).send({
@@ -66,12 +59,7 @@ const editRestaurantRating = async (req, res) => {
         message: 'This restaurant does not exist'
       })
     }
-    const rating = await Rating.findOne({
-      where: {
-        authorId: userId,
-        restaurantId
-      }
-    })
+    const rating = await ratingHelper.getRating(userId, restaurantId)
     if (!rating) {
       warningLogger.warn('ratingController/editRestaurantRating: You never rated this restaurant.')
       return res.status(400).send({

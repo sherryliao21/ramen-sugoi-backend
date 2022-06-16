@@ -47,6 +47,27 @@ User.belongsToMany(Restaurant, {
   constraints: false
 })
 
+// query methods
+const getRating = async (authorId, restaurantId) => {
+  const data = await Rating.findOne({
+    where: {
+      authorId,
+      restaurantId
+    }
+  })
+  return data
+}
+
+const createRating = async (authorId, restaurantId, stars) => {
+  await Rating.create({
+    authorId,
+    restaurantId,
+    stars: parseInt(stars, 10)
+  })
+}
+
 module.exports = {
-  Rating
+  Rating,
+  getRating,
+  createRating
 }
