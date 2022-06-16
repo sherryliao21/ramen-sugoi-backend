@@ -1,11 +1,13 @@
-const { User, Restaurant, Comment } = require('../models/index')
+const userHelper = require('../models/user')
+const restaurantHelper = require('../models/restaurant')
+const commentHelper = require('../models/comment')
 const { infoLogger, errorLogger, warningLogger } = require('../utils/logger')
 
 const postComment = async (req, res) => {
   try {
     const userId = req.user.id
     const { content, restaurantId } = req.body
-    const user = await User.findByPk(userId)
+    const user = await userHelper.getUserById(userId)
     if (!user) {
       warningLogger.warn('commentController/postComment: This user does not exist.')
       return res.status(400).send({
@@ -13,7 +15,7 @@ const postComment = async (req, res) => {
         message: 'This user does not exist'
       })
     }
-    const restaurant = await Restaurant.findByPk(restaurantId)
+    const restaurant = await restaurantHelper.getRestaurantById(restaurantId)
     if (!restaurant) {
       warningLogger.warn('commentController/postComment: This restaurant does not exist.')
       return res.status(400).send({
@@ -36,23 +38,15 @@ const postComment = async (req, res) => {
         DROP CONSTRAINT comments_authorId_restaurantId_unique
       `
     */
-    const comment = await Comment.findAll({
-      where: {
-        authorId: userId,
-        restaurantId
-      },
-      order: [['createdAt', 'DESC']],
-      limit: 1,
-      raw: true,
-      nest: true
-    })
-    await Comment.create({
+    const commentData = await commentHelper.getCommentCountOnLastPost(userId, restaurantId)
+    const newComment = {
       content,
       visibility: !user.isBanned,
       authorId: userId,
       restaurantId: restaurantId,
-      commentCountOnSamePost: comment.length ? comment[0].commentCountOnSamePost + 1 : 1
-    })
+      commentCountOnSamePost: commentData.length ? commentData[0].commentCountOnSamePost + 1 : 1
+    }
+    await commentHelper.createComment(newComment)
     infoLogger.info(`commentController/postComment: userId: ${userId} commented on restaurantId: ${restaurantId}!`)
     return res.status(200).send({
       status: 'success',
@@ -71,7 +65,7 @@ const editComment = async (req, res) => {
     const userId = req.user.id
     const { commentId } = req.params
     const { content } = req.body
-    const user = await User.findByPk(userId)
+    const user = await userHelper.getUserById(userId)
     if (!user) {
       warningLogger.warn('commentController/editComment: This user does not exist.')
       return res.status(400).send({
@@ -86,7 +80,7 @@ const editComment = async (req, res) => {
         message: 'Comment cannot be empty!'
       })
     }
-    const comment = await Comment.findByPk(commentId)
+    const comment = await commentHelper.getCommentById(commentId)
     comment.content = content
     await comment.save()
     infoLogger.info(`commentController/editComment: userId: ${userId} updated comment on restaurantId: ${comment.restaurantId}!`)
@@ -107,7 +101,7 @@ const deleteComment = async (req, res) => {
   try {
     const userId = req.user.id
     const { commentId } = req.params
-    const user = await User.findByPk(userId)
+    const user = await userHelper.getUserById(userId)
     if (!user) {
       warningLogger.warn('commentController/deleteComment: This user does not exist.')
       return res.status(400).send({
@@ -115,7 +109,7 @@ const deleteComment = async (req, res) => {
         message: 'This user does not exist'
       })
     }
-    const comment = await Comment.findByPk(commentId)
+    const comment = await commentHelper.getCommentById(commentId)
     if (!comment) {
       warningLogger.warn('commentController/deleteComment: This comment does not exist.')
       return res.status(400).send({
@@ -140,17 +134,8 @@ const deleteComment = async (req, res) => {
 
 const getLatestComments = async (req, res) => {
   try {
-    const comments = await Comment.findAll({
-      order: [['createdAt', 'DESC']],
-      raw: true,
-      nest: true,
-      attributes: ['id', 'authorId', 'restaurantId', 'content', 'visibility', 'createdAt']
-    })
-    return res.status(200).send({
-      status: 'success',
-      message: 'Retrieved a list of latest comments',
-      comments
-    })
+    const comments = await commentHelper.getLatestVisibleComments()
+    return res.status(200).send(comments)
   } catch (error) {
     errorLogger.error(`commentController/getLatestComments: ${error.stack}`)
     return res.status(500).send({

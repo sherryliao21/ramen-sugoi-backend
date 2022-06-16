@@ -57,6 +57,47 @@ User.belongsToMany(Restaurant, {
   constraints: false
 })
 
+const getCommentCountOnLastPost = async (authorId, restaurantId) => {
+  const data = await Comment.findAll({
+      where: {
+        authorId,
+        restaurantId
+      },
+      order: [['createdAt', 'DESC']],
+      limit: 1,
+      attributes: ['commentCountOnSamePost'],
+      raw: true,
+      nest: true
+  })
+  return data
+}
+
+const getLatestVisibleComments = async () => {
+  const data = await Comment.findAll({
+    order: [['createdAt', 'DESC']],
+    where: {
+      visibility: 1
+    },
+    raw: true,
+    nest: true,
+    attributes: ['id', 'authorId', 'restaurantId', 'content', 'visibility', 'createdAt']
+  })
+  return data
+}
+
+const createComment = async (content) => {
+  await Comment.create(content)
+}
+
+const getCommentById = async (commentId) => {
+  const data = await Comment.findByPk(commentId)
+  return data
+}
+
 module.exports = {
-  Comment
+  Comment,
+  getCommentCountOnLastPost,
+  createComment,
+  getCommentById,
+  getLatestVisibleComments
 }

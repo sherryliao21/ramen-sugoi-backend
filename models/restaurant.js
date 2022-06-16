@@ -48,6 +48,16 @@ Restaurant.belongsTo(Category, {
   constraints: false
 })
 
+const getRestaurantById = async (restaurantId) => {
+  const data = await Restaurant.findByPk(restaurantId, {
+    raw: true,
+    nest: true
+  })
+
+  return data
+}
+
 module.exports = {
-  Restaurant
+  Restaurant,
+  getRestaurantById
 }
