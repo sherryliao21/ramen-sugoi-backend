@@ -181,7 +181,7 @@ const getTop10UsersByCategory = async (req, res) => {
     }
     const result = users.filter(user => !user.isBanned).map((user) => {
       const response = {
-        id: 2,
+        id: user.id,
         nick_name: user.nick_name,
         description: user.description,
         isBanned: user.isBanned,
