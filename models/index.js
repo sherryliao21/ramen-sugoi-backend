@@ -10,17 +10,6 @@ const { Comment } = require('./comment')
 const { Favorite } = require('./favorite')
 const { Rating } = require('./rating')
 
-ramenDB
-  // Enable this to re-sync DB. CAUTIOUS: will drop all existing DBs
-  // .sync({ force: true })
-  .sync()
-  .then(() => {
-    infoLogger.info('[MariaDB] DB synced')
-  })
-  .catch((err) => {
-    errorLogger.error(`models/index: DB sync failed: ${err.stack}`)
-  })
-
 // define relations
 Area.hasOne(Restaurant)
 Restaurant.belongsTo(Area, {
@@ -102,6 +91,17 @@ User.belongsToMany(Restaurant, {
   foreignKey: 'authorId',
   constraints: false
 })
+
+ramenDB
+  // Enable this to re-sync DB. CAUTIOUS: will drop all existing DBs
+  // .sync({ force: true })
+  .sync()
+  .then(() => {
+    infoLogger.info('[MariaDB] DB synced')
+  })
+  .catch((err) => {
+    errorLogger.error(`models/index: DB sync failed: ${err.stack}`)
+  })
 
 module.exports = {
   Area,

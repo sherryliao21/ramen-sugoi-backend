@@ -23,6 +23,9 @@ const Comment = ramenDB.define(
     },
     restaurantId: {
       type: DataTypes.INTEGER
+    },
+    commentCountOnSamePost: {
+      type: DataTypes.INTEGER
     }
   },
   {

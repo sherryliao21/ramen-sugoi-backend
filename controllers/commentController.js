@@ -28,11 +28,22 @@ const postComment = async (req, res) => {
         message: 'Comment cannot be empty!'
       })
     }
+    const comment = await Comment.findAll({
+      where: {
+        authorId: userId,
+        restaurantId
+      },
+      order: [['createdAt', 'DESC']],
+      limit: 1,
+      raw: true,
+      nest: true
+    })
     await Comment.create({
       content,
       visibility: !user.isBanned,
       authorId: userId,
-      restaurantId: restaurantId
+      restaurantId: restaurantId,
+      commentCountOnSamePost: comment.length ? comment[0].commentCountOnSamePost + 1 : 1
     })
     infoLogger.info(`commentController/postComment: userId: ${userId} commented on restaurantId: ${restaurantId}!`)
     return res.status(200).send({
