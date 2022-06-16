@@ -17,4 +17,6 @@ const Area = ramenDB.define(
   { paranoid: true }
 )
 
-module.exports = Area
+module.exports = {
+  Area
+}

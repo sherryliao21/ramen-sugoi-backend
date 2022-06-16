@@ -2,9 +2,7 @@ const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
 const { Op } = require('sequelize')
 const { errorLogger, warningLogger } = require('../utils/logger')
-const User = require('../models/user')
-const Comment = require('../models/comment')
-const Restaurant = require('../models/restaurant')
+const { User, Restaurant } = require('../models/index')
 
 const userLogin = async (req, res) => {
   try {

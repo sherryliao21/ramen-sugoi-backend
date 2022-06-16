@@ -17,4 +17,6 @@ const Role = ramenDB.define(
   { paranoid: true }
 )
 
-module.exports = Role
+module.exports = {
+  Role
+}

@@ -3,9 +3,7 @@ if (process.env.ENV !== 'production') {
 }
 
 const ramenDB = require('../databases/mariaDB')
-const Category = require('../models/category')
-const Area = require('../models/area')
-const Restaurant = require('../models/restaurant')
+const { Restaurant, Area, Category } = require('../models/index')
 const { infoLogger, errorLogger } = require('../utils/logger')
 
 const seedCategories = [

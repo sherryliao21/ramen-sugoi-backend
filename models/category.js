@@ -17,4 +17,6 @@ const Category = ramenDB.define(
   { paranoid: true }
 )
 
-module.exports = Category
+module.exports = {
+  Category
+}

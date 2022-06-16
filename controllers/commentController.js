@@ -1,7 +1,5 @@
-const User = require('../models/user')
-const Restaurant = require('../models/restaurant')
-const Comment = require('../models/comment')
-const { infoLogger, errorLogger, warningLogger } = require("../utils/logger")
+const { User, Restaurant, Comment } = require('../models/index')
+const { infoLogger, errorLogger, warningLogger } = require('../utils/logger')
 
 const postComment = async (req, res) => {
   try {
@@ -86,7 +84,7 @@ const editComment = async (req, res) => {
   }
 }
 
-const deleteComment =async (req, res) => {
+const deleteComment = async (req, res) => {
   try {
     const userId = req.user.id
     const { commentId } = req.params
@@ -104,13 +102,13 @@ const deleteComment =async (req, res) => {
       return res.status(400).send({
         status: 'error',
         message: 'This comment does not exist'
-      })      
+      })
     }
     await comment.destroy()
     infoLogger.info(`commentController/deleteComment: userId: ${userId} deleted comment on restaurantId: ${comment.restaurantId}!`)
     return res.status(200).send({
       status: 'success',
-      message: 'Successfully deleted a comment!'      
+      message: 'Successfully deleted a comment!'
     })
   } catch (error) {
     errorLogger.error(`commentController/deleteComment: ${error.stack}`)
@@ -139,7 +137,7 @@ const getLatestComments = async (req, res) => {
     return res.status(500).send({
       status: 'error',
       message: 'Unable to get latest comments'
-    }) 
+    })
   }
 }
 

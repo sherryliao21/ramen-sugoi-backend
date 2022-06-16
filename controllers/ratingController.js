@@ -1,5 +1,4 @@
-const Restaurant = require('../models/restaurant')
-const Rating = require('../models/rating')
+const { Restaurant, Rating } = require('../models/index')
 const { infoLogger, errorLogger, warningLogger } = require('../utils/logger')
 
 const rateRestaurant = async (req, res) => {

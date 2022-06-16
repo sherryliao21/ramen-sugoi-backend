@@ -1,7 +1,5 @@
 const { DataTypes } = require('sequelize')
 const ramenDB = require('../databases/mariaDB')
-const Role = require('./role')
-const Followship = require('./followship')
 
 const User = ramenDB.define(
   'user',
@@ -44,21 +42,15 @@ const User = ramenDB.define(
   { paranoid: true }
 )
 
-Role.hasOne(User)
-User.belongsTo(Role, {
-  foreignKey: 'roleId'
-})
+const getUserById = async (userId) => {
+  const data = await User.findByPk(userId, {
+    raw: true,
+    nest: true
+  })
+  return data
+}
 
-User.belongsToMany(User, {
-  through: Followship,
-  as: 'Followings',
-  foreignKey: 'followingId'
-})
-
-User.belongsToMany(User, {
-  through: Followship,
-  as: 'Followers',
-  foreignKey: 'followerId'
-})
-
-module.exports = User
+module.exports = {
+  User,
+  getUserById
+}

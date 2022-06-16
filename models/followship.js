@@ -17,4 +17,6 @@ const Followship = ramenDB.define('followship', {
   }
 })
 
-module.exports = Followship
+module.exports = {
+  Followship
+}

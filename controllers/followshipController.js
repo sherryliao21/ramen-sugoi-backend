@@ -1,5 +1,4 @@
-const User = require('../models/user')
-const Followship = require('../models/followship')
+const { User, Followship } = require('../models/index')
 const { infoLogger, errorLogger, warningLogger } = require('../utils/logger')
 
 const followUser = async (req, res) => {

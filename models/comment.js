@@ -1,7 +1,5 @@
 const { DataTypes } = require('sequelize')
 const ramenDB = require('../databases/mariaDB')
-const User = require('./user')
-const Restaurant = require('./restaurant')
 
 const Comment = ramenDB.define(
   'comment',
@@ -26,24 +24,12 @@ const Comment = ramenDB.define(
     restaurantId: {
       type: DataTypes.INTEGER
     }
-  }, {
+  },
+  {
     paranoid: true
   }
 )
 
-Comment.belongsTo(Restaurant)
-Comment.belongsTo(User)
-
-Restaurant.belongsToMany(User, {
-  through: Comment,
-  as: 'CommentAuthors',
-  foreignKey: 'restaurantId'
-})
-
-User.belongsToMany(Restaurant, {
-  through: Comment,
-  as: 'CommentedRestaurants',
-  foreignKey: 'authorId'
-})
-
-module.exports = Comment
+module.exports = {
+  Comment
+}

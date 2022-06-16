@@ -1,7 +1,7 @@
 const fs = require('fs')
 const util = require('util')
 const { errorLogger } = require('../utils/logger')
-const User = require('../models/user')
+const { User } = require('../models/index')
 const s3ObjectStore = require('../service/s3')
 
 const getProfile = async (req, res) => {

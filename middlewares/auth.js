@@ -1,6 +1,5 @@
 const jwt = require('jsonwebtoken')
-const User = require('../models/user')
-const Role = require('../models/role')
+const { User, Role } = require('../models/index')
 const { warningLogger, errorLogger } = require('../utils/logger')
 
 const isAuthenticated = async (req, res, next) => {

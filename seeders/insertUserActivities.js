@@ -3,9 +3,7 @@ if (process.env.ENV !== 'production') {
 }
 
 const ramenDB = require('../databases/mariaDB')
-const Rating = require('../models/rating')
-const Comment = require('../models/comment')
-const Favorite = require('../models/favorite')
+const { Rating, Comment, Favorite } = require('../models/index')
 const { infoLogger, errorLogger } = require('../utils/logger')
 
 const seedRatings = [

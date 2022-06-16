@@ -2,9 +2,7 @@ if (process.env.ENV !== 'production') {
   require('dotenv').config()
 }
 const ramenDB = require('../databases/mariaDB')
-const Followship = require('../models/followship')
-const Role = require('../models/role')
-const User = require('../models/user')
+const { User, Role, Followship } = require('../models/index')
 const { infoLogger, errorLogger } = require('../utils/logger')
 
 const roleSeed = [

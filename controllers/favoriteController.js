@@ -1,5 +1,4 @@
-const Favorite = require('../models/favorite')
-const Restaurant = require('../models/restaurant')
+const { Favorite, Restaurant } = require('../models/index')
 const { infoLogger, errorLogger, warningLogger } = require('../utils/logger')
 
 const likeRestaurant = async (req, res) => {
