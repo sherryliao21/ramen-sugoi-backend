@@ -33,6 +33,7 @@ User.belongsToMany(Restaurant, {
   constraints: false
 })
 
+// query methods
 const getFavorite = async (userId, restaurantId) => {
   const data = await Favorite.findOne({
     where: {

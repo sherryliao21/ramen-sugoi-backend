@@ -48,6 +48,7 @@ Restaurant.belongsTo(Category, {
   constraints: false
 })
 
+// query methods
 const getRestaurantById = async (restaurantId) => {
   const data = await Restaurant.findByPk(restaurantId, {
     raw: true,

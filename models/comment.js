@@ -57,6 +57,7 @@ User.belongsToMany(Restaurant, {
   constraints: false
 })
 
+// query methods
 const getCommentCountOnLastPost = async (authorId, restaurantId) => {
   const data = await Comment.findAll({
       where: {
