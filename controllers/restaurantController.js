@@ -40,7 +40,9 @@ const getRestaurant = async (req, res) => {
       attributes: ['id', 'name', 'profile_pic', 'description', 'address', 'categoryId', 'areaId'],
       include: [
         { model: User, as: 'RatingAuthors' },
-        { model: User, as: 'CommentAuthors' }
+        { model: User, as: 'CommentAuthors' },
+        { model: Category, attributes: ['name'] },
+        { model: Area, attributes: ['name'] }
       ]
     })
     if (!restaurant) {
@@ -50,16 +52,6 @@ const getRestaurant = async (req, res) => {
         message: 'This restaurant does not exist'
       })
     }
-    const category = await Category.findByPk(restaurant.categoryId, {
-      raw: true,
-      nest: true,
-      attributes: ['name']
-    })
-    const area = await Area.findByPk(restaurant.areaId, {
-      raw: true,
-      nest: true,
-      attributes: ['name']
-    })
     const response = [restaurant].map((data) => {
       const result = {
         id: data.id,
@@ -67,10 +59,10 @@ const getRestaurant = async (req, res) => {
         profilePic: data.profile_pic,
         description: data.description,
         address: data.address,
-        category: category.name,
-        area: area.name,
-        ratingCount: restaurant.RatingAuthors.length,
-        commentCount: restaurant.CommentAuthors.length
+        category: data.category.name,
+        area: data.area.name,
+        ratingCount: data.RatingAuthors.length,
+        commentCount: data.CommentAuthors.length
       }
       return result
     })
