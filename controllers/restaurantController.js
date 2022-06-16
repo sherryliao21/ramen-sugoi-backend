@@ -8,7 +8,7 @@ const getRestaurants = async (req, res) => {
     if (categoryId && categoryId.trim()) keys.categoryId = categoryId
     if (areaId && areaId.trim()) keys.areaId = areaId
     const options = {
-      keys,
+      where: keys,
       attributes: ['id', 'name', 'profile_pic', 'description', 'address', 'categoryId', 'areaId']
     }
     if (isLatest && isLatest === 'true') {
@@ -33,6 +33,7 @@ const getRestaurants = async (req, res) => {
 const getRestaurant = async (req, res) => {
   try {
     const { restaurantId } = req.params
+
     const restaurant = await Restaurant.findByPk(restaurantId, {
       nest: true,
       attributes: ['id', 'name', 'profile_pic', 'description', 'address', 'categoryId', 'areaId'],
