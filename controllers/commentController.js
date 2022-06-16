@@ -28,6 +28,14 @@ const postComment = async (req, res) => {
         message: 'Comment cannot be empty!'
       })
     }
+    /*
+      From 2nd time on, creating new comments on the same restaurant will fail since there's
+      an unique constraint on comments table. Execute following SQL statement MANUALLY to enable full feature.
+      `
+        ALTER TABLE comments
+        DROP CONSTRAINT comments_authorId_restaurantId_unique
+      `
+    */
     const comment = await Comment.findAll({
       where: {
         authorId: userId,
