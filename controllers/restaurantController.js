@@ -25,6 +25,31 @@ const getRestaurants = async (req, res) => {
   }
 }
 
+const getRestaurant = async (req, res) => {
+  try {
+    const { restaurantId } = req.params
+    const restaurant = await Restaurant.findByPk(restaurantId, {
+      raw: true,
+      nest: true
+    })
+    if (!restaurant) {
+      warningLogger.warn(`restaurantController/getRestaurant: No restaurant data for id: ${restaurantId}`)
+      return res.status(400).send({
+        statue: 'error',
+        message: 'This restaurant does not exist'
+      })
+    }
+    return res.status(200).send(restaurant)
+  } catch (error) {
+    errorLogger.error(`restaurantController/getRestaurantsByCategory: ${error.stack}`)
+    return res.status(500).send({
+      status: 'error',
+      message: `Unable to get ${categoryId} restaurants`
+    })
+  }
+}
+
 module.exports = {
-  getRestaurants
+  getRestaurants,
+  getRestaurant
 }
