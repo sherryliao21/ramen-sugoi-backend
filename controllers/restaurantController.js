@@ -1,4 +1,5 @@
-const { Restaurant, Category, Area, User, Rating, Comment } = require('../models/index')
+const { Restaurant, Category, Area, User } = require('../models/index')
+const { Op } = require('sequelize')
 const { errorLogger, warningLogger } = require('../utils/logger')
 
 const getRestaurants = async (req, res) => {
@@ -83,6 +84,55 @@ const getRestaurant = async (req, res) => {
   }
 }
 
+const getRestaurantByKeyword = async (req, res) => {
+  try {
+    const { keyword } = req.query
+    const restaurants = await Restaurant.findAll({
+      where: {
+        name: {
+          [Op.substring]: keyword
+        }
+      },
+      nest: true,
+      attributes: ['id', 'name', 'profile_pic', 'description', 'address', 'categoryId', 'areaId'],
+      include: [
+        { model: User, as: 'RatingAuthors', attributes: ['id'] },
+        { model: User, as: 'CommentAuthors', attributes: ['id'] },
+        { model: Category, attributes: ['name'] },
+        { model: Area, attributes: ['name'] }
+      ]
+    })
+    if (!restaurants) {
+      warningLogger.warn(`restaurantController/getRestaurant: No restaurant data for id: ${restaurantId}`)
+      return res.status(400).send({
+        statue: 'error',
+        message: 'This restaurant does not exist'
+      })
+    }
+    const response = restaurants.map((data) => {
+      const result = {
+        id: data.id,
+        name: data.name,
+        profilePic: data.profile_pic,
+        description: data.description,
+        address: data.address,
+        category: data.category.name,
+        area: data.area.name,
+        ratingCount: data.RatingAuthors.length,
+        commentCount: data.CommentAuthors.length
+      }
+      return result
+    })
+    return res.status(200).send(response)
+  } catch (error) {
+    errorLogger.error(`restaurantController/getRestaurantByKeyword: ${error.stack}`)
+    return res.status(500).send({
+      status: 'error',
+      message: `Unable to get restaurant`
+    })    
+  }
+}
+
 const getTop10RestaurantsByCategory = async (req, res) => {
   try {
     const modelConfig = {
@@ -139,5 +189,6 @@ const getTop10RestaurantsByCategory = async (req, res) => {
 module.exports = {
   getRestaurants,
   getRestaurant,
-  getTop10RestaurantsByCategory
+  getTop10RestaurantsByCategory,
+  getRestaurantByKeyword
 }
