@@ -1,5 +1,7 @@
 const { DataTypes } = require('sequelize')
 const ramenDB = require('../databases/mariaDB')
+const { Area } = require('./area')
+const { Category } = require('./category')
 
 const Restaurant = ramenDB.define(
   'restaurant',
@@ -33,6 +35,18 @@ const Restaurant = ramenDB.define(
   },
   { paranoid: true }
 )
+
+Area.hasOne(Restaurant)
+Restaurant.belongsTo(Area, {
+  foreignKey: 'areaId',
+  constraints: false
+})
+
+Category.hasOne(Restaurant)
+Restaurant.belongsTo(Category, {
+  foreignKey: 'categoryId',
+  constraints: false
+})
 
 module.exports = {
   Restaurant
