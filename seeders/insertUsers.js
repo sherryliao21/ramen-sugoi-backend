@@ -49,8 +49,7 @@ const userSeed = [
     email: 'user3@example.com',
     password: '$2a$10$UWXkJ4.Si8LWuySN0c0Thu/VlcITnl6a8qXyNSD40n4p9TcCnM3P.',
     description: 'user3',
-    roleId: 2,
-    isBanned: 1
+    roleId: 2
   }
 ]
 
