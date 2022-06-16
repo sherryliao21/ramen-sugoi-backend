@@ -3,14 +3,19 @@ const { errorLogger, warningLogger } = require('../utils/logger')
 
 const getRestaurants = async (req, res) => {
   try {
-    const { categoryId, areaId } = req.query
+    const { categoryId, areaId, isLatest } = req.query
     const keys = {}
     if (categoryId && categoryId.trim()) keys.categoryId = categoryId
     if (areaId && areaId.trim()) keys.areaId = areaId
-    const restaurants = await Restaurant.findAll({
-      where: keys,
+    const options = {
+      keys,
       attributes: ['id', 'name', 'profile_pic', 'description', 'address', 'categoryId', 'areaId']
-    })
+    }
+    if (isLatest && isLatest === 'true') {
+      options.order = [['createdAt', 'DESC']]
+      options.limit = 10
+    }
+    const restaurants = await Restaurant.findAll(options)
     if (!restaurants.length) {
       warningLogger.warn(`restaurantController/getRestaurants: No restaurant data for category: ${categoryId}, areaId: ${areaId}`)
     }
