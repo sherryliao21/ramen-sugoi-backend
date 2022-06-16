@@ -1,4 +1,5 @@
-const { User, Followship } = require('../models/index')
+const userHelper = require('../models/user')
+const followshipHelper = require('../models/followship')
 const { infoLogger, errorLogger, warningLogger } = require('../utils/logger')
 
 const followUser = async (req, res) => {
@@ -12,20 +13,15 @@ const followUser = async (req, res) => {
         message: 'You cannot follow yourself.'
       })
     }
-    const followingUser = await User.findByPk(followingUserId)
-    if (!followingUser || followingUser.roleId === 1 || followingUser.isBanned === 1) {
+    const followingUser = await userHelper.getValidUserById(followingUserId)
+    if (!followingUser) {
       warningLogger.warn('followshipController/followUser: This user does not exist.')
       return res.status(400).send({
         status: 'error',
         message: 'This user does not exist'
       })
     }
-    const followship = await Followship.findOne({
-      where: {
-        followingId: followingUserId,
-        followerId: user.id
-      }
-    })
+    const followship = await followshipHelper.getFollowship(user.id, followingUserId) 
     if (followship) {
       warningLogger.warn('followshipController/followUser: You already followed this user.')
       return res.status(400).send({
@@ -33,10 +29,7 @@ const followUser = async (req, res) => {
         message: 'You already followed this user'
       })
     }
-    await Followship.create({
-      followingId: followingUserId,
-      followerId: user.id
-    })
+    await followshipHelper.createFollowship(user.id, followingUserId)
     infoLogger.info(`followshipController/followUser: Followed userId: ${followingUserId} successfully!`)
     return res.status(200).send({
       status: 'success',
@@ -62,20 +55,15 @@ const unfollowUser = async (req, res) => {
         message: 'You cannot unfollow yourself.'
       })
     }
-    const followingUser = await User.findByPk(followingUserId)
-    if (!followingUser || followingUser.roleId === 1 || followingUser.isBanned === 1) {
+    const followingUser = await userHelper.getValidUserById(followingUserId)
+    if (!followingUser) {
       warningLogger.warn('followshipController/unfollowUser: This user does not exist.')
       return res.status(400).send({
         status: 'error',
         message: 'This user does not exist'
       })
     }
-    const followship = await Followship.findOne({
-      where: {
-        followingId: followingUserId,
-        followerId: user.id
-      }
-    })
+    const followship = await followshipHelper.getFollowship(user.id, followingUserId) 
     if (!followship) {
       warningLogger.warn('followshipController/followUser: You never followed this user.')
       return res.status(400).send({

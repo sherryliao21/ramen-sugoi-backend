@@ -1,4 +1,4 @@
-const { DataTypes } = require('sequelize')
+const { DataTypes, Op } = require('sequelize')
 const ramenDB = require('../databases/mariaDB')
 const { Followship } = require('./followship')
 const { Role } = require('./role')
@@ -73,7 +73,25 @@ const getUserById = async (userId) => {
   return data
 }
 
+const getValidUserById = async (userId) => {
+  const data = await User.findOne({
+    where: {
+      id: userId,
+      roleId: {
+        [Op.ne]: 1
+      },
+      isBanned: {
+        [Op.ne]: 1
+      }
+    },
+    raw: true,
+    nest: true
+  })
+  return data
+}
+
 module.exports = {
   User,
-  getUserById
+  getUserById,
+  getValidUserById
 }

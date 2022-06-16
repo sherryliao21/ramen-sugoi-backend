@@ -1,4 +1,3 @@
-const { Favorite, Restaurant } = require('../models/index')
 const favoriteHelper = require('../models/favorite')
 const restaurantHelper = require('../models/restaurant')
 const { infoLogger, errorLogger, warningLogger } = require('../utils/logger')

@@ -17,6 +17,25 @@ const Followship = ramenDB.define('followship', {
   }
 })
 
+const getFollowship = async (followerId, followingId) => {
+  const data = await Followship.findOne({
+    where: {
+      followingId,
+      followerId
+    }
+  })
+  return data
+}
+
+const createFollowship = async (followerId, followingId) => {
+  await Followship.create({
+    followerId,
+    followingId
+  })
+}
+
 module.exports = {
-  Followship
+  Followship,
+  getFollowship,
+  createFollowship
 }
