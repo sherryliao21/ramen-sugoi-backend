@@ -6,9 +6,6 @@ const ramenDB = require('../databases/mariaDB')
 const Category = require('../models/category')
 const Area = require('../models/area')
 const Restaurant = require('../models/restaurant')
-const Rating = require('../models/rating')
-const Comment = require('../models/comment')
-const Favorite = require('../models/favorite')
 const { infoLogger, errorLogger } = require('../utils/logger')
 
 const seedCategories = [
@@ -26,18 +23,21 @@ const seedRestaurants = [
   {
     name: '一蘭',
     description: '一蘭拉麵',
+    address: '台北市羅斯福路 123 號',
     categoryId: 2,
     areaId: 1
   },
   {
     name: '一樂',
     description: '一樂拉麵',
+    address: '台北市長安東路 277 號',
     categoryId: 2,
     areaId: 1
   },
   {
     name: '丸',
     description: '丸拉麵',
+    address: '台中市台灣大道 25 號',
     categoryId: 1,
     areaId: 2
   }

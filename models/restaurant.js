@@ -23,6 +23,9 @@ const Restaurant = ramenDB.define(
     description: {
       type: DataTypes.TEXT
     },
+    address: {
+      type: DataTypes.STRING
+    },
     categoryId: {
       type: DataTypes.INTEGER
     },
