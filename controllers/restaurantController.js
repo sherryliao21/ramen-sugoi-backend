@@ -1,4 +1,4 @@
-const { Restaurant } = require('../models/index')
+const { Restaurant, User, Rating, Comment } = require('../models/index')
 const { errorLogger, warningLogger } = require('../utils/logger')
 
 const getRestaurants = async (req, res) => {
@@ -30,7 +30,12 @@ const getRestaurant = async (req, res) => {
     const { restaurantId } = req.params
     const restaurant = await Restaurant.findByPk(restaurantId, {
       raw: true,
-      nest: true
+      nest: true,
+      attributes: ['id', 'name', 'profile_pic', 'description', 'address', 'categoryId', 'areaId'],
+      include: [
+        { model: User, as: 'RatingAuthors' },
+        { model: User, as: 'CommentAuthors' }
+      ]
     })
     if (!restaurant) {
       warningLogger.warn(`restaurantController/getRestaurant: No restaurant data for id: ${restaurantId}`)
@@ -41,13 +46,15 @@ const getRestaurant = async (req, res) => {
     }
     return res.status(200).send(restaurant)
   } catch (error) {
-    errorLogger.error(`restaurantController/getRestaurantsByCategory: ${error.stack}`)
+    errorLogger.error(`restaurantController/getRestaurant: ${error.stack}`)
     return res.status(500).send({
       status: 'error',
-      message: `Unable to get ${categoryId} restaurants`
+      message: `Unable to get restaurant`
     })
   }
 }
+
+const getTop10Restaurants = async (req, res) => {}
 
 module.exports = {
   getRestaurants,
