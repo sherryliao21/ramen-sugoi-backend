@@ -9,7 +9,8 @@ const favorite = require('./modules/favorite')
 const rating = require('./modules/rating')
 const comments = require('./modules/comments')
 const restaurants = require('./modules/restaurants')
-const { isAuthenticated, isUser, isNotBanned } = require('../middlewares/auth')
+const admin = require('./modules/admin')
+const { isAuthenticated, isUser, isNotBanned, isStaff } = require('../middlewares/auth')
 
 router.use(`${baseURL}/user`, user)
 router.use(`${baseURL}/users`, isAuthenticated, isUser, users)
@@ -18,5 +19,6 @@ router.use(`${baseURL}/favorite`, isAuthenticated, isUser, favorite)
 router.use(`${baseURL}/rating`, isAuthenticated, isUser, rating)
 router.use(`${baseURL}/comments`, isAuthenticated, isUser, isNotBanned, comments)
 router.use(`${baseURL}/restaurants`, isAuthenticated, isUser, restaurants)
+router.use(`${baseURL}/admin`, isAuthenticated, isStaff, admin)
 
 module.exports = router
