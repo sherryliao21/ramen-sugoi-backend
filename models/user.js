@@ -65,11 +65,25 @@ User.belongsToMany(User, {
 })
 
 // query methods
-const getUserById = async (userId) => {
-  const data = await User.findByPk(userId, {
+const getUserById = async (userId, isModel) => {
+  let options = {}
+  if (!isModel) {
+    options = {
+      raw: true,
+      nest: true
+    }
+  }
+  const data = await User.findByPk(userId, options)
+  return data
+}
+
+const getUserByEmail = async (email) => {
+  const data = await User.findOne({
+    where: { email },
     raw: true,
     nest: true
   })
+
   return data
 }
 
@@ -90,8 +104,45 @@ const getValidUserById = async (userId) => {
   return data
 }
 
+const getUserWithRelatedData = async (userId, models) => {
+  const data = await User.findOne({
+    where: {
+      id: userId,
+      roleId: {
+        [Op.ne]: 1
+      },
+      isBanned: {
+        [Op.ne]: 1
+      }
+    },
+    attributes: ['id', 'nick_name', 'description', 'createdAt'],
+    include: models,
+    nest: true
+  })
+
+  return data
+}
+
+const getUsersByCategory = async (category, modelConfig) => {
+  const data = await User.findAll({
+    where: {
+      roleId: {
+        [Op.ne]: 1 // exclude admin
+      }
+    },
+    attributes: ['id', 'nick_name', 'description', 'isBanned'],
+    include: { model: modelConfig[category].model, as: modelConfig[category].tableName },
+    nest: true
+  })
+
+  return data
+}
+
 module.exports = {
   User,
   getUserById,
-  getValidUserById
+  getUserByEmail,
+  getValidUserById,
+  getUserWithRelatedData,
+  getUsersByCategory
 }

@@ -1,6 +1,7 @@
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
 const { Op } = require('sequelize')
+const userHelper = require('../models/user')
 const { errorLogger, warningLogger } = require('../utils/logger')
 const { User, Restaurant } = require('../models/index')
 
@@ -13,11 +14,7 @@ const userLogin = async (req, res) => {
         message: 'Field cannot be blank!'
       })
     }
-    const user = await User.findOne({
-      where: { email },
-      raw: true,
-      nest: true
-    })
+    const user = await userHelper.getUserByEmail(email)
     if (!user) {
       return res.status(400).send({
         status: 'error',
@@ -47,7 +44,7 @@ const userLogin = async (req, res) => {
       token
     })
   } catch (error) {
-    errorLogger.error(`userController/userLogin: ${error}`)
+    errorLogger.error(`userController/userLogin: ${error.stack}`)
     return res.status(500).send({
       status: 'error',
       message: 'Unable to log in'
@@ -64,12 +61,7 @@ const userRegister = async (req, res) => {
         message: 'All fields are required!'
       })
     }
-    const user = await User.findOne(
-      {
-        where: { email }
-      },
-      { raw: true, nest: true }
-    )
+    const user = await userHelper.getUserByEmail(email)
     if (user) {
       return res.status(400).send({
         status: 'error',
@@ -112,7 +104,8 @@ const updatePassword = async (req, res) => {
         message: 'All fields are required!'
       })
     }
-    const user = await User.findByPk(req.user.id)
+    const isModel = true
+    const user = await userHelper.getUserById(req.user.id, isModel)
     if (!user) {
       return res.status(403).send({
         status: 'error',
@@ -166,29 +159,22 @@ const getTop10UsersByCategory = async (req, res) => {
       }
     }
     const { category } = req.params
-    const users = await User.findAll({
-      where: {
-        roleId: {
-          [Op.ne]: 1  // exclude admin
-        }
-      },
-      attributes: ['id', 'nick_name', 'description', 'isBanned'],
-      include: { model: modelConfig[category].model, as: modelConfig[category].tableName },
-      nest: true
-    })
+    const users = await userHelper.getUsersByCategory(category, modelConfig)
     if (!users.length) {
       return res.status(200).send([])
     }
-    const result = users.filter(user => !user.isBanned).map((user) => {
-      const response = {
-        id: user.id,
-        nick_name: user.nick_name,
-        description: user.description,
-        isBanned: user.isBanned,
-        [modelConfig[category].count]: user[modelConfig[category].tableName].length
-      }
-      return response  
-    })
+    const result = users
+      .filter((user) => !user.isBanned)
+      .map((user) => {
+        const response = {
+          id: user.id,
+          nick_name: user.nick_name,
+          description: user.description,
+          isBanned: user.isBanned,
+          [modelConfig[category].count]: user[modelConfig[category].tableName].length
+        }
+        return response
+      })
     const sorted = result
       .sort((a, b) => {
         return b[modelConfig[category].count] - a[modelConfig[category].count]
@@ -209,37 +195,29 @@ const getTop10UsersByCategory = async (req, res) => {
 const getUser = async (req, res) => {
   try {
     const { userId } = req.params
-    const user = await User.findOne({
-      where: {
-        id: userId,
-        roleId: {
-          [Op.ne]: 1
-        },
-        isBanned: {
-          [Op.ne]: 1
-        }
+    const includeRelatedData = [
+      {
+        model: User,
+        as: 'Followers',
+        attributes: ['id', 'nick_name']
       },
-      attributes: ['id', 'nick_name', 'description', 'createdAt'],
-      include: [
-        {
-          model: User, as: 'Followers',
-          attributes: ['id', 'nick_name']
-        },
-        {
-          model: User, as: 'Followings',
-          attributes: ['id', 'nick_name']
-        },
-        {
-          model: Restaurant, as: 'CommentedRestaurants',
-          attributes: ['id', 'name']
-        },
-        {
-          model: Restaurant, as: 'LikedRestaurants',
-          attributes: ['id', 'name']
-        }
-      ],
-      nest: true
-    })
+      {
+        model: User,
+        as: 'Followings',
+        attributes: ['id', 'nick_name']
+      },
+      {
+        model: Restaurant,
+        as: 'CommentedRestaurants',
+        attributes: ['id', 'name']
+      },
+      {
+        model: Restaurant,
+        as: 'LikedRestaurants',
+        attributes: ['id', 'name']
+      }
+    ]
+    const user = await userHelper.getUserWithRelatedData(userId, includeRelatedData)
     if (!user) {
       warningLogger.warn('This user does not exist')
       return res.status(400).send({
