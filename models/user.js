@@ -66,9 +66,16 @@ User.belongsToMany(User, {
 
 // query methods
 const getUserById = async (userId, isModel) => {
-  let options = {}
+  let options = {
+    where: {
+      roleId: {
+        [Op.eq]: 3
+      }
+    }
+  }
   if (!isModel) {
     options = {
+      ...options,
       raw: true,
       nest: true
     }
@@ -79,7 +86,12 @@ const getUserById = async (userId, isModel) => {
 
 const getUserByEmail = async (email) => {
   const data = await User.findOne({
-    where: { email },
+    where: {
+      email,
+      roleId: {
+        [Op.eq]: 3
+      }
+    },
     raw: true,
     nest: true
   })
@@ -92,7 +104,7 @@ const getValidUserById = async (userId) => {
     where: {
       id: userId,
       roleId: {
-        [Op.ne]: 1
+        [Op.eq]: 3
       },
       isBanned: {
         [Op.ne]: 1
@@ -109,7 +121,7 @@ const getUserWithRelatedData = async (userId, models) => {
     where: {
       id: userId,
       roleId: {
-        [Op.ne]: 1
+        [Op.eq]: 3
       },
       isBanned: {
         [Op.ne]: 1
@@ -127,7 +139,7 @@ const getUsersByCategory = async (category, modelConfig) => {
   const data = await User.findAll({
     where: {
       roleId: {
-        [Op.ne]: 1 // exclude admin
+        [Op.eq]: 3
       }
     },
     attributes: ['id', 'nick_name', 'description', 'isBanned'],

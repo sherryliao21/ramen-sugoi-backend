@@ -1,6 +1,9 @@
 const jwt = require('jsonwebtoken')
+const { Op } = require('sequelize')
 const { User, Role } = require('../models/index')
 const { warningLogger, errorLogger } = require('../utils/logger')
+const userHelper = require('../models/user')
+const roleHelper = require('../models/role')
 
 const isAuthenticated = async (req, res, next) => {
   try {
@@ -18,16 +21,13 @@ const isAuthenticated = async (req, res, next) => {
       warningLogger.warn('auth/isAuthenticated: Token expired')
       return res.status(400).send({ status: 'error', message: 'Token expired' })
     }
-    const user = await User.findOne({
-      where: { email: isVerified.email },
-      raw: true,
-      nest: true
-    })
+    const user = await userHelper.getUserByEmail(isVerified.email)
     if (!user) {
       warningLogger.warn('auth/isAuthenticated: User not found')
       return res.status(400).send({ status: 'error', message: 'User not found' })
     }
     req.user = {
+      ...req.user,
       id: user.id,
       name: user.name,
       roleId: user.roleId
@@ -42,16 +42,31 @@ const isAuthenticated = async (req, res, next) => {
   }
 }
 
-const isAdmin = async (req, res, next) => {
+const isStaff = async (req, res, next) => {
   try {
     const { roleId } = req.user
-    const userRole = await Role.findOne({
-      where: {
-        id: roleId
-      },
-      raw: true,
-      nest: true
+    const userRole = await roleHelper.getRoleById(roleId)
+    if (userRole.name === 'User') {
+      warningLogger.warn('authController/isStaff: This user is not a staff.')
+      return res.status(401).send({
+        status: 'error',
+        message: 'No permission.'
+      })
+    }
+    next()
+  } catch (error) {
+    errorLogger.error(`auth/isStaff: ${error}`)
+    return res.status(500).send({
+      status: 'error',
+      message: 'Authentication error'
     })
+  }
+}
+
+const isAdmin = async (req, res) => {
+  try {
+    const { roleId } = req.user
+    const userRole = await roleHelper.getRoleById(roleId)
     if (userRole.name !== 'Admin') {
       warningLogger.warn('authController/isAdmin: This user is not an admin.')
       return res.status(401).send({
@@ -72,13 +87,7 @@ const isAdmin = async (req, res, next) => {
 const isUser = async (req, res, next) => {
   try {
     const { roleId } = req.user
-    const userRole = await Role.findOne({
-      where: {
-        id: roleId
-      },
-      raw: true,
-      nest: true
-    })
+    const userRole = await roleHelper.getRoleById(roleId)
     if (userRole.name !== 'User') {
       warningLogger.warn('authController/isUser: This user is not a valid User.')
       return res.status(401).send({
@@ -99,13 +108,7 @@ const isUser = async (req, res, next) => {
 const isNotBanned = async (req, res, next) => {
   try {
     const { roleId } = req.user
-    const userRole = await Role.findOne({
-      where: {
-        id: roleId
-      },
-      raw: true,
-      nest: true
-    })
+    const userRole = await roleHelper.getRoleById(roleId)
     if (userRole.name !== 'User') {
       warningLogger.warn('authController/isNotBanned: This user is not a valid User.')
       return res.status(401).send({
@@ -114,10 +117,8 @@ const isNotBanned = async (req, res, next) => {
       })
     }
     const userId = req.user.id
-    const user = await User.findByPk(userId, {
-      raw: true, nest: true
-    })
-    if (user.isBanned) {
+    const user = await userHelper.getValidUserById(userId)
+    if (!user) {
       warningLogger.warn('authController/isNotBanned: This user is banned.')
       return res.status(401).send({
         status: 'error',
@@ -136,6 +137,7 @@ const isNotBanned = async (req, res, next) => {
 
 module.exports = {
   isAuthenticated,
+  isStaff,
   isAdmin,
   isUser,
   isNotBanned
