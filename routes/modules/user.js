@@ -11,7 +11,7 @@ const { isAuthenticated, isUser } = require('../../middlewares/auth')
 router.post('/login', userController.userLogin)
 router.post('/register', userController.userRegister)
 
-router.put('/password', isAuthenticated, isUser, userController.updatePassword)
+router.put('/password', isAuthenticated, userController.updatePassword)
 
 router.route('/profile').all(isAuthenticated, isUser).get(profileController.getProfile).put(profileController.editProfile)
 

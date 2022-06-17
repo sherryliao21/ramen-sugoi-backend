@@ -63,7 +63,7 @@ const isStaff = async (req, res, next) => {
   }
 }
 
-const isAdmin = async (req, res) => {
+const isAdmin = async (req, res, next) => {
   try {
     const { roleId } = req.user
     const userRole = await roleHelper.getRoleById(roleId)

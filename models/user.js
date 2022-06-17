@@ -38,13 +38,12 @@ const User = ramenDB.define(
     },
     roleId: {
       type: DataTypes.INTEGER,
-      defaultValue: 2
+      defaultValue: 3
     }
   },
   { paranoid: true }
 )
 
-Role.hasOne(User)
 User.belongsTo(Role, {
   foreignKey: 'roleId',
   constraints: false
@@ -81,21 +80,6 @@ const getUserById = async (userId, isModel) => {
     }
   }
   const data = await User.findByPk(userId, options)
-  return data
-}
-
-const getUserByEmail = async (email) => {
-  const data = await User.findOne({
-    where: {
-      email,
-      roleId: {
-        [Op.eq]: 3
-      }
-    },
-    raw: true,
-    nest: true
-  })
-
   return data
 }
 
@@ -138,9 +122,7 @@ const getUserWithRelatedData = async (userId, models) => {
 const getUsersByCategory = async (category, modelConfig) => {
   const data = await User.findAll({
     where: {
-      roleId: {
-        [Op.eq]: 3
-      }
+      roleId: 3
     },
     attributes: ['id', 'nick_name', 'description', 'isBanned'],
     include: { model: modelConfig[category].model, as: modelConfig[category].tableName },
@@ -150,11 +132,44 @@ const getUsersByCategory = async (category, modelConfig) => {
   return data
 }
 
+const getLastStaff = async () => {
+  const data = await User.findAll({
+    where: {
+      roleId: 2
+    },
+    attributes: ['full_name'],
+    order: [['createdAt', 'DESC']],
+    limit: 1,
+    nest: true,
+    raw: true
+  })
+
+  return data
+}
+
+const createUser = async (userData) => {
+  await User.create(userData)
+}
+
+const getUserByEmail = async (email) => {
+  const data = await User.findOne({
+    where: {
+      email
+    },
+    raw: true,
+    nest: true
+  })
+
+  return data
+}
+
 module.exports = {
   User,
   getUserById,
-  getUserByEmail,
   getValidUserById,
   getUserWithRelatedData,
-  getUsersByCategory
+  getUsersByCategory,
+  getLastStaff,
+  createUser,
+  getUserByEmail
 }
