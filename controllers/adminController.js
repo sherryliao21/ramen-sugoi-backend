@@ -1,7 +1,6 @@
 const bcrypt = require('bcryptjs')
 const userHelper = require('../models/user')
 const { errorLogger } = require('../utils/logger')
-const { User } = require('../models/index')
 
 const createStaff = async (req, res) => {
   try {
@@ -24,7 +23,7 @@ const createStaff = async (req, res) => {
       message: 'Successfully created a staff!'
     })
   } catch (error) {
-    errorLogger.error(`commentController/createStaff: ${error.stack}`)
+    errorLogger.error(`adminController/createStaff: ${error.stack}`)
     return res.status(500).send({
       status: 'error',
       message: 'Unable to create staff'
@@ -32,6 +31,27 @@ const createStaff = async (req, res) => {
   }
 }
 
+const modifyUserBanStatus = async (req, res) => {
+  try {
+    const { userId } = req.params
+    const isModel = true
+    const user = await userHelper.getUserById(userId, isModel)
+    user.isBanned = !user.isBanned
+    await user.save()
+    return res.status(200).send({
+      status: 'success',
+      message: `Successfully modified. User status is now: ${user.isBanned ? 'banned' : 'active'}`
+    })
+  } catch (error) {
+    errorLogger.error(`adminController/modifyUserBanStatus: ${error.stack}`)
+    return res.status(500).send({
+      status: 'error',
+      message: 'Unable to modify user isBanned status'
+    })
+  }
+}
+
 module.exports = {
-  createStaff
+  createStaff,
+  modifyUserBanStatus
 }
