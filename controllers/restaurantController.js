@@ -1,22 +1,12 @@
-const { Restaurant, Category, Area, User } = require('../models/index')
+const { User } = require('../models/index')
+const restaurantHelper = require('../models/restaurant')
 const { Op } = require('sequelize')
 const { errorLogger, warningLogger } = require('../utils/logger')
 
 const getRestaurants = async (req, res) => {
   try {
     const { categoryId, areaId, isLatest } = req.query
-    const keys = {}
-    if (categoryId && categoryId.trim()) keys.categoryId = categoryId
-    if (areaId && areaId.trim()) keys.areaId = areaId
-    const options = {
-      where: keys,
-      attributes: ['id', 'name', 'profile_pic', 'description', 'address', 'categoryId', 'areaId']
-    }
-    if (isLatest && isLatest === 'true') {
-      options.order = [['createdAt', 'DESC']]
-      options.limit = 10
-    }
-    const restaurants = await Restaurant.findAll(options)
+    const restaurants = await restaurantHelper.getRestaurantsByCategories(categoryId, areaId, isLatest)
     if (!restaurants.length) {
       warningLogger.warn(`restaurantController/getRestaurants: No restaurant data for category: ${categoryId}, areaId: ${areaId}`)
     }
@@ -34,17 +24,8 @@ const getRestaurants = async (req, res) => {
 const getRestaurant = async (req, res) => {
   try {
     const { restaurantId } = req.params
-
-    const restaurant = await Restaurant.findByPk(restaurantId, {
-      nest: true,
-      attributes: ['id', 'name', 'profile_pic', 'description', 'address', 'categoryId', 'areaId'],
-      include: [
-        { model: User, as: 'RatingAuthors' },
-        { model: User, as: 'CommentAuthors' },
-        { model: Category, attributes: ['name'] },
-        { model: Area, attributes: ['name'] }
-      ]
-    })
+    const includeRelatedTables = true
+    const restaurant = await restaurantHelper.getRestaurantById(restaurantId, includeRelatedTables)
     if (!restaurant) {
       warningLogger.warn(`restaurantController/getRestaurant: No restaurant data for id: ${restaurantId}`)
       return res.status(400).send({
@@ -79,21 +60,7 @@ const getRestaurant = async (req, res) => {
 const getRestaurantByKeyword = async (req, res) => {
   try {
     const { keyword } = req.query
-    const restaurants = await Restaurant.findAll({
-      where: {
-        name: {
-          [Op.substring]: keyword
-        }
-      },
-      nest: true,
-      attributes: ['id', 'name', 'profile_pic', 'description', 'address', 'categoryId', 'areaId'],
-      include: [
-        { model: User, as: 'RatingAuthors', attributes: ['id'] },
-        { model: User, as: 'CommentAuthors', attributes: ['id'] },
-        { model: Category, attributes: ['name'] },
-        { model: Area, attributes: ['name'] }
-      ]
-    })
+    const restaurants = await restaurantHelper.getRestaurantByKeyword(keyword)
     if (!restaurants) {
       warningLogger.warn(`restaurantController/getRestaurant: No restaurant data for id: ${restaurantId}`)
       return res.status(400).send({
@@ -121,11 +88,11 @@ const getRestaurantByKeyword = async (req, res) => {
     return res.status(500).send({
       status: 'error',
       message: `Unable to get restaurant`
-    })    
+    })
   }
 }
 
-const getTop10RestaurantsByCategory = async (req, res) => {
+const getTop10RestaurantsByPopularity = async (req, res) => {
   try {
     const modelConfig = {
       popular: {
@@ -140,11 +107,7 @@ const getTop10RestaurantsByCategory = async (req, res) => {
       }
     }
     const { category } = req.params
-    const restaurants = await Restaurant.findAll({
-      attributes: ['id', 'name', 'profile_pic', 'description', 'address', 'categoryId', 'areaId'],
-      include: { model: modelConfig[category].model, as: modelConfig[category].tableName },
-      nest: true
-    })
+    const restaurants = await restaurantHelper.getRestaurantsByPopularity(category, modelConfig)
     if (!restaurants.length) {
       return res.status(200).send([])
     }
@@ -170,7 +133,7 @@ const getTop10RestaurantsByCategory = async (req, res) => {
     return res.status(200).send(sorted)
   } catch (error) {
     const { category } = req.params
-    errorLogger.error(`restaurantController/getTop10Restaurants: ${error.stack}`)
+    errorLogger.error(`restaurantController/getTop10RestaurantsByPopularity: ${error.stack}`)
     return res.status(500).send({
       status: 'error',
       message: `Unable to get top 10 ${category} restaurants`
@@ -181,6 +144,6 @@ const getTop10RestaurantsByCategory = async (req, res) => {
 module.exports = {
   getRestaurants,
   getRestaurant,
-  getTop10RestaurantsByCategory,
+  getTop10RestaurantsByPopularity,
   getRestaurantByKeyword
 }
