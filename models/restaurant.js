@@ -1,4 +1,4 @@
-const { DataTypes } = require('sequelize')
+const { DataTypes, Op } = require('sequelize')
 const ramenDB = require('../databases/mariaDB')
 const { Area } = require('./area')
 const { Category } = require('./category')
@@ -32,6 +32,9 @@ const Restaurant = ramenDB.define(
     },
     areaId: {
       type: DataTypes.INTEGER
+    },
+    publish_status: {
+      type: DataTypes.STRING
     }
   },
   { paranoid: true }
@@ -50,10 +53,26 @@ Restaurant.belongsTo(Category, {
 })
 
 // query methods
-const getRestaurantById = async (restaurantId, options) => {
+const getRestaurantById = async (restaurantId, includeRelatedTables) => {
   let data = []
-  if (options) {
-    data = await Restaurant.findByPk(restaurantId, {
+  let options = {
+    where: {
+      id: restaurantId,
+      publish_status: {
+        [Op.eq]: 'published'
+      }
+    },
+    raw: true,
+    nest: true
+  }
+  if (includeRelatedTables) {
+    options = {
+      where: {
+        id: restaurantId,
+        publish_status: {
+          [Op.eq]: 'published'
+        }
+      },
       nest: true,
       attributes: ['id', 'name', 'profile_pic', 'description', 'address', 'categoryId', 'areaId'],
       include: [
@@ -62,19 +81,19 @@ const getRestaurantById = async (restaurantId, options) => {
         { model: Category, attributes: ['name'] },
         { model: Area, attributes: ['name'] }
       ]
-    })
-    return data
+    }
   }
-  data = await Restaurant.findByPk(restaurantId, {
-    raw: true,
-    nest: true
-  })
+  data = await Restaurant.findOne(options)
 
   return data
 }
 
 const getRestaurantsByCategories = async (categoryId, areaId, isLatest) => {
-  const keys = {}
+  const keys = {
+    publish_status: {
+      [Op.eq]: 'published'
+    }
+  }
   if (categoryId && categoryId.trim()) keys.categoryId = categoryId
   if (areaId && areaId.trim()) keys.areaId = areaId
   const options = {
@@ -89,11 +108,14 @@ const getRestaurantsByCategories = async (categoryId, areaId, isLatest) => {
   return data
 }
 
-const getRestaurantsByKeyword = async (keyword) => {
+const getRestaurantByKeyword = async (keyword) => {
   const options = {
     where: {
       name: {
         [Op.substring]: keyword
+      },
+      publish_status: {
+        [Op.eq]: 'published'
       }
     },
     nest: true,
@@ -111,6 +133,11 @@ const getRestaurantsByKeyword = async (keyword) => {
 
 const getRestaurantsByPopularity = async (category, modelConfig) => {
   const options = {
+    where: {
+      publish_status: {
+        [Op.eq]: 'published'
+      }
+    },
     attributes: ['id', 'name', 'profile_pic', 'description', 'address', 'categoryId', 'areaId'],
     include: { model: modelConfig[category].model, as: modelConfig[category].tableName },
     nest: true
@@ -123,6 +150,6 @@ module.exports = {
   Restaurant,
   getRestaurantById,
   getRestaurantsByCategories,
-  getRestaurantsByKeyword,
+  getRestaurantByKeyword,
   getRestaurantsByPopularity
 }

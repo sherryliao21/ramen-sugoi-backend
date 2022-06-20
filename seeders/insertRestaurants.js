@@ -23,21 +23,24 @@ const seedRestaurants = [
     description: '一蘭拉麵',
     address: '台北市羅斯福路 123 號',
     categoryId: 2,
-    areaId: 1
+    areaId: 1,
+    publish_status: 'draft'
   },
   {
     name: '一樂',
     description: '一樂拉麵',
     address: '台北市長安東路 277 號',
     categoryId: 2,
-    areaId: 1
+    areaId: 1,
+    publish_status: 'published'
   },
   {
     name: '丸',
     description: '丸拉麵',
     address: '台中市台灣大道 25 號',
     categoryId: 1,
-    areaId: 2
+    areaId: 2,
+    publish_status: 'published'
   }
 ]
 
