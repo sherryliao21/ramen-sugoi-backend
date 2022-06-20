@@ -9,9 +9,7 @@ const Restaurant = ramenDB.define(
   {
     id: {
       type: DataTypes.INTEGER,
-      allowNull: false,
       primaryKey: true,
-      unique: true,
       autoIncrement: true
     },
     name: {
@@ -34,7 +32,8 @@ const Restaurant = ramenDB.define(
       type: DataTypes.INTEGER
     },
     publish_status: {
-      type: DataTypes.STRING
+      type: DataTypes.STRING,
+      defaultValue: 'draft'
     }
   },
   { paranoid: true }
@@ -164,11 +163,16 @@ const getRestaurantByStatus = async (status) => {
   return data
 }
 
+const createRestaurant = async (content) => {
+  await Restaurant.create(content)
+}
+
 module.exports = {
   Restaurant,
   getRestaurantById,
   getRestaurantsByCategories,
   getRestaurantByKeyword,
   getRestaurantsByPopularity,
-  getRestaurantByStatus
+  getRestaurantByStatus,
+  createRestaurant
 }

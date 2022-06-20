@@ -1,7 +1,10 @@
 const bcrypt = require('bcryptjs')
+const util = require('util')
+const fs = require('fs')
 const userHelper = require('../models/user')
 const restaurantHelper = require('../models/restaurant')
-const { errorLogger } = require('../utils/logger')
+const s3ObjectStore  = require('../service/s3')
+const { errorLogger, warningLogger } = require('../utils/logger')
 
 const createStaff = async (req, res) => {
   try {
@@ -66,8 +69,62 @@ const getRestaurantByStatus = async (req, res) => {
   }
 }
 
+const createRestaurant = async (req, res) => {
+  try {
+    const { name, description, address, categoryId, areaId } = req.body
+    if (!name.trim() || !description.trim() || !address.trim() || !categoryId.trim() || !areaId.trim()) {
+      warningLogger.warn(`adminController/createRestaurant: All fields are required!`)
+      return res.status(400).send({
+        status: 'error',
+        message: 'All fields are required!'
+      })
+    }
+    await restaurantHelper.createRestaurant({ name, description, address, categoryId, areaId })
+    return res.status(200).send({
+      status: 'success',
+      message: 'Successfully created a restaurant'
+    })
+  } catch (error) {
+    errorLogger.error(`adminController/createRestaurant: ${error.stack}`)
+    return res.status(500).send({
+      status: 'error',
+      message: 'Unable to create restaurant'
+    })    
+  }
+}
+
+const uploadRestaurantPic = async (req, res) => {
+  try {
+    const { restaurantId } = req.params
+    const file = req.file
+    if (!file) {
+      warningLogger.warn(`adminController/uploadRestaurantPic: File missing!`)
+      return res.status(400).send({
+        status: 'error',
+        message: 'File shouldn\'t be empty!'
+      })
+    }
+    await s3ObjectStore.uploadRestaurantPic(file, restaurantId)
+    const unlinkFile = util.promisify(fs.unlink)
+    await unlinkFile(req.file.path)
+    
+    return res.status(200).send({
+      status: 'success',
+      message: 'Successfully uploaded a restaurant pic'
+    })
+  } catch (error) {
+    errorLogger.error(`adminController/uploadRestaurantPic: ${error.stack}`)
+    return res.status(500).send({
+      status: 'error',
+      message: 'Unable to upload restaurant pic'
+    }) 
+  }
+}
+
 module.exports = {
   createStaff,
   modifyUserBanStatus,
-  getRestaurantByStatus
+  getRestaurantByStatus,
+  createRestaurant,
+  uploadRestaurantPic
 }
