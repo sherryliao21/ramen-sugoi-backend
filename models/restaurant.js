@@ -9,7 +9,9 @@ const Restaurant = ramenDB.define(
   {
     id: {
       type: DataTypes.INTEGER,
+      allowNull: false,
       primaryKey: true,
+      unique: true,
       autoIncrement: true
     },
     name: {
@@ -164,6 +166,7 @@ const getRestaurantByStatus = async (status) => {
 }
 
 const createRestaurant = async (content) => {
+  console.log(content)
   await Restaurant.create(content)
 }
 

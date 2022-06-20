@@ -71,15 +71,23 @@ const getRestaurantByStatus = async (req, res) => {
 
 const createRestaurant = async (req, res) => {
   try {
-    const { name, description, address, categoryId, areaId } = req.body
-    if (!name.trim() || !description.trim() || !address.trim() || !categoryId.trim() || !areaId.trim()) {
+    const { name, description, address } = req.body
+    const categoryId = Number(req.body.categoryId)
+    const areaId = Number(req.body.areaId)
+    if (!name.trim() || !description.trim() || !address.trim() || !categoryId || !areaId) {
       warningLogger.warn(`adminController/createRestaurant: All fields are required!`)
       return res.status(400).send({
         status: 'error',
         message: 'All fields are required!'
       })
     }
-    await restaurantHelper.createRestaurant({ name, description, address, categoryId, areaId })
+    await restaurantHelper.createRestaurant({
+    name: name,
+    description: description,
+    address: address,
+    categoryId: categoryId,
+    areaId: areaId
+  })
     return res.status(200).send({
       status: 'success',
       message: 'Successfully created a restaurant'
@@ -107,7 +115,7 @@ const uploadRestaurantPic = async (req, res) => {
     await s3ObjectStore.uploadRestaurantPic(file, restaurantId)
     const unlinkFile = util.promisify(fs.unlink)
     await unlinkFile(req.file.path)
-    
+
     return res.status(200).send({
       status: 'success',
       message: 'Successfully uploaded a restaurant pic'
