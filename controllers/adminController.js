@@ -1,5 +1,6 @@
 const bcrypt = require('bcryptjs')
 const userHelper = require('../models/user')
+const restaurantHelper = require('../models/restaurant')
 const { errorLogger } = require('../utils/logger')
 
 const createStaff = async (req, res) => {
@@ -51,7 +52,22 @@ const modifyUserBanStatus = async (req, res) => {
   }
 }
 
+const getRestaurantByStatus = async (req, res) => {
+  try {
+    const { status } = req.query
+    const restaurants = await restaurantHelper.getRestaurantByStatus(status)
+    return res.status(200).send(restaurants)
+  } catch (error) {
+    errorLogger.error(`adminController/getRestaurantByStatus: ${error.stack}`)
+    return res.status(500).send({
+      status: 'error',
+      message: 'Unable to get restaurant by status'
+    })
+  }
+}
+
 module.exports = {
   createStaff,
-  modifyUserBanStatus
+  modifyUserBanStatus,
+  getRestaurantByStatus
 }

@@ -146,10 +146,25 @@ const getRestaurantsByPopularity = async (category, modelConfig) => {
   return data
 }
 
+const getRestaurantByStatus = async (status) => {
+  const data = await Restaurant.findAll({
+    where: {
+      publish_status: {
+        [Op.eq]: status
+      }
+    },
+    attributes: ['id', 'name', 'profile_pic'],
+    raw: true,
+    nest: true
+  })
+  return data
+}
+
 module.exports = {
   Restaurant,
   getRestaurantById,
   getRestaurantsByCategories,
   getRestaurantByKeyword,
-  getRestaurantsByPopularity
+  getRestaurantsByPopularity,
+  getRestaurantByStatus
 }
