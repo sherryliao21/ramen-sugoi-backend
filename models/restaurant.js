@@ -147,12 +147,16 @@ const getRestaurantsByPopularity = async (category, modelConfig) => {
 }
 
 const getRestaurantByStatus = async (status) => {
-  const data = await Restaurant.findAll({
-    where: {
+  let whereOption = {}
+  if (status !== 'all') {
+    whereOption = {
       publish_status: {
         [Op.eq]: status
       }
-    },
+    }
+  }
+  const data = await Restaurant.findAll({
+    where: whereOption,
     attributes: ['id', 'name', 'profile_pic'],
     raw: true,
     nest: true
