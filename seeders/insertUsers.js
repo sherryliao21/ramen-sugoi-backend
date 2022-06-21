@@ -65,7 +65,7 @@ const userSeed = [
     full_name: 'test_staff2',
     nick_name: 'staff2',
     email: 'staff2@example.com',
-    password: '$2a$10$UWXkJ4.Si8LWuySN0c0Thu/VlcITnl6a8qXyNSD40n4p9TcCnM3P.',
+    password: '$2a$10$guMHnfXtmRzLGypQM7MT2eX2llMH3GK8U9EGh/rk.owa3h9Hb3BFu',
     description: 'staff2',
     roleId: 2
   }

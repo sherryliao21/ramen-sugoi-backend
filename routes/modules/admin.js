@@ -8,6 +8,7 @@ const adminController = require('../../controllers/adminController')
 const { isAdmin, isStaff } = require('../../middlewares/auth')
 
 router.post('/staff', isAdmin, adminController.createStaff)
+router.delete('/staff/:userId', isAdmin, adminController.deleteStaff)
 router.post('/ban/:userId', isStaff, adminController.modifyUserBanStatus)
 router.route('/restaurants').all(isStaff).get(adminController.getRestaurantByStatus).post(adminController.createRestaurant)
 router

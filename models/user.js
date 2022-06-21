@@ -138,7 +138,7 @@ const getLastStaff = async () => {
       roleId: 2
     },
     attributes: ['full_name'],
-    order: [['createdAt', 'DESC']],
+    order: [['full_name', 'DESC']],
     limit: 1,
     nest: true,
     raw: true
@@ -178,6 +178,16 @@ const getUsers = async (isBanned) => {
   return data
 }
 
+const getAdmin = async (userId) => {
+  const data = await User.findOne({
+    where: {
+      id: userId,
+      roleId: 1
+    }
+  })
+  return data
+}
+
 module.exports = {
   User,
   getUserById,
@@ -187,5 +197,6 @@ module.exports = {
   getLastStaff,
   createUser,
   getUserByEmail,
-  getUsers
+  getUsers,
+  getAdmin
 }

@@ -9,7 +9,16 @@ const { errorLogger, warningLogger } = require('../utils/logger')
 
 const createStaff = async (req, res) => {
   try {
+    const user = await userHelper.getAdmin(req.user.id)
+    if (!user) {
+      warningLogger.warn('adminController/createStaff: Only the admin has permission to create staff')
+      return res.status(400).send({
+        status: 'error',
+        message: 'Only the admin has permission to create staff'
+      })      
+    }
     const lastStaff = await userHelper.getLastStaff()
+    console.log(lastStaff)
     const staffNumber = parseInt(lastStaff[0].full_name.slice(-1), 10) + 1
     const baseName = `staff${staffNumber}`
     const salt = await bcrypt.genSalt(10)
@@ -22,6 +31,7 @@ const createStaff = async (req, res) => {
       roleId: 2,
       description: baseName
     }
+    console.log(staffData)
     await userHelper.createUser(staffData)
     return res.status(200).send({
       status: 'success',
@@ -33,6 +43,40 @@ const createStaff = async (req, res) => {
       status: 'error',
       message: 'Unable to create staff'
     })
+  }
+}
+
+const deleteStaff = async (req, res) => {
+  try {
+    const user = await userHelper.getAdmin(req.user.id)
+    if (!user) {
+      warningLogger.warn('adminController/deleteStaff: Only the admin has permission to delete staff')
+      return res.status(400).send({
+        status: 'error',
+        message: 'Only the admin has permission to delete staff'
+      })      
+    }
+    const { userId } = req.params
+    const isModel = true
+    const staff = await userHelper.getUserById(userId, isModel)
+    if (!staff) {
+      warningLogger.warn('adminController/deleteStaff: This staff does not exist')
+      return res.status(400).send({
+        status: 'error',
+        message: 'adminController/deleteStaff: This staff does not exist'
+      })
+    }
+    await staff.destroy()
+    return res.status(200).send({
+      status: 'success',
+      message: 'adminController/deleteStaff: Successfully deleted staff!'
+    })
+  } catch (error) {
+    errorLogger.error(`adminController/deleteStaff: ${error.stack}`)
+    return res.status(500).send({
+      status: 'error',
+      message: 'Unable to delete staff'
+    })    
   }
 }
 
@@ -272,6 +316,7 @@ const deleteComment = async (req, res) => {
 
 module.exports = {
   createStaff,
+  deleteStaff,
   modifyUserBanStatus,
   getRestaurantByStatus,
   createRestaurant,
