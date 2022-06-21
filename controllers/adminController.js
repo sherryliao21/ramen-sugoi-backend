@@ -135,6 +135,7 @@ const editRestaurantStatus = async (req, res) => {
     const { publishStatus } = req.body
     const userId = Number(req.user.id)
     let restaurant = await restaurantHelper.getRestaurantByIdInBackstage(restaurantId)
+
     if (userId === Number(restaurant.authorId)) {
       warningLogger.warn(`adminController/editRestaurantStatus: Restaurant status has to be reviewed by staffs other than the author!`)
       return res.status(400).send({
@@ -142,13 +143,24 @@ const editRestaurantStatus = async (req, res) => {
         message: 'Restaurant status has to be reviewed by staffs other than the author!'
       })
     }
-    restaurant.publish_status = publishStatus
-    restaurant.authorId = userId
-    await restaurant.save()
 
-    return res.status(200).send({
-      status: 'success',
-      message: 'Updated restaurant status successfully!'
+    if (
+      (restaurant.publish_status === 'approved' && publishStatus === 'published') ||
+      (restaurant.publish_status === 'draft' && publishStatus === 'approved') ||
+      (restaurant.publish_status === 'published' && publishStatus === 'draft')
+    ) {
+      restaurant.authorId = userId
+      restaurant.publish_status = publishStatus
+      await restaurant.save()
+      return res.status(200).send({
+        status: 'success',
+        message: 'Updated restaurant status successfully!'
+      })
+    }
+    warningLogger.warn(`adminController/editRestaurantStatus: Restaurant status has to be updated one level higher/lower each time!`)
+    return res.status(400).send({
+      status: 'error',
+      message: 'Restaurant status has to be updated one level higher/lower each time!'
     })
   } catch (error) {
     errorLogger.error(`adminController/editRestaurantStatus: ${error}`)
