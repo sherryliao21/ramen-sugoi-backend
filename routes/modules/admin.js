@@ -7,8 +7,11 @@ const { isAdmin, isStaff } = require('../../middlewares/auth')
 
 router.post('/staff', isAdmin, adminController.createStaff)
 router.post('/ban/:userId', isStaff, adminController.modifyUserBanStatus)
-router.get('/restaurants', isStaff, adminController.getRestaurantByStatus)
-router.post('/restaurants', isStaff, adminController.createRestaurant)
-router.post('/restaurants/:restaurantId/avatar', isStaff, upload.single('restaurant'), adminController.uploadRestaurantAvatar)
+router.route('/restaurants').all(isStaff).get(adminController.getRestaurantByStatus).post(adminController.createRestaurant)
+router
+  .route('/restaurants/:restaurantId/avatar')
+  .all(isStaff)
+  .post(upload.single('restaurant'), adminController.uploadRestaurantAvatar)
+  .delete(adminController.deleteRestaurantAvatar)
 
 module.exports = router

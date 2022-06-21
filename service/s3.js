@@ -59,11 +59,12 @@ const getAvatar = async (userId) => {
   }
 }
 
-const deleteAvatar = async (userId) => {
+const deleteAvatar = async (id, avatarType) => {
   try {
+    const key = avatarType === 'user' ? `avatar/user${id.toString()}_avatar` : `restaurant/restaurant${id.toString()}_profile`
     const params = {
       Bucket: process.env.S3_BUCKET_HOST,
-      Key: `avatar/user${userId.toString()}_avatar`
+      Key: key
     }
     const data = await s3Client.send(new DeleteObjectCommand(params))
 

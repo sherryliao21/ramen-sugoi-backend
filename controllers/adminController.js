@@ -129,12 +129,29 @@ const uploadRestaurantAvatar = async (req, res) => {
   }
 }
 
+const deleteRestaurantAvatar = async (req, res) => {
+  try {
+    const { restaurantId } = req.params
+    await s3ObjectStore.deleteAvatar(restaurantId, 'restaurant')
 
+    return res.status(200).send({
+      status: 'success',
+      message: 'Deleted restaurant avatar successfully!'
+    })
+  } catch (error) {
+    errorLogger.error(`adminController/deleteRestaurantAvatar: ${error}`)
+    return res.status(500).send({
+      status: 'error',
+      message: 'Unable to delete restaurant avatar'
+    })
+  }
+}
 
 module.exports = {
   createStaff,
   modifyUserBanStatus,
   getRestaurantByStatus,
   createRestaurant,
-  uploadRestaurantAvatar
+  uploadRestaurantAvatar,
+  deleteRestaurantAvatar
 }

@@ -110,7 +110,7 @@ const getAvatar = async (req, res) => {
 
 const deleteAvatar = async (req, res) => {
   try {
-    await s3ObjectStore.deleteAvatar(req.user.id)
+    await s3ObjectStore.deleteAvatar(req.user.id, 'user')
 
     return res.status(200).send({
       status: 'success',
