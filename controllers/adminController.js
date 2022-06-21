@@ -112,7 +112,7 @@ const uploadRestaurantAvatar = async (req, res) => {
         message: "File shouldn't be empty!"
       })
     }
-    await s3ObjectStore.uploadRestaurantPic(file, restaurantId)
+    await s3ObjectStore.uploadAvatar(file, restaurantId, 'restaurant')
     const unlinkFile = util.promisify(fs.unlink)
     await unlinkFile(req.file.path)
 
@@ -128,6 +128,8 @@ const uploadRestaurantAvatar = async (req, res) => {
     })
   }
 }
+
+
 
 module.exports = {
   createStaff,

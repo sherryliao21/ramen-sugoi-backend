@@ -25,13 +25,13 @@ const streamToBuffer = (stream) =>
     })
   })
 
-const uploadAvatar = async (file, userId) => {
+const uploadAvatar = async (file, id, avatarType) => {
   try {
     const stream = fs.createReadStream(file.path)
-
+    const key = avatarType === 'user' ? `avatar/user${id.toString()}_avatar` : `restaurant/restaurant${id.toString()}_profile`
     const params = {
       Bucket: process.env.S3_BUCKET_HOST,
-      Key: `avatar/user${userId.toString()}_avatar`,
+      Key: key,
       Body: stream,
       ACL: 'public-read'
     }
@@ -73,28 +73,8 @@ const deleteAvatar = async (userId) => {
   }
 }
 
-const uploadRestaurantPic = async (file, restaurantId) => {
-  try {
-    const stream = fs.createReadStream(file.path)
-
-    const params = {
-      Bucket: process.env.S3_BUCKET_HOST,
-      Key: `restaurant/restaurant${restaurantId.toString()}_profile`,
-      Body: stream,
-      ACL: 'public-read'
-    }
-    const results = await s3Client.send(new PutObjectCommand(params))
-    infoLogger.info(`Successfully created ${params.Key} and uploaded it to ${params.Bucket}/${params.Key}`)
-
-    return results
-  } catch (error) {
-    errorLogger.error(`service/s3/uploadAvatar: ${error.stack}`)
-  }
-}
-
 module.exports = {
   uploadAvatar,
   getAvatar,
-  deleteAvatar,
-  uploadRestaurantPic
+  deleteAvatar
 }

@@ -69,7 +69,7 @@ const uploadAvatar = async (req, res) => {
         message: 'File is missing'
       })
     }
-    const result = await s3ObjectStore.uploadAvatar(req.file, req.user.id)
+    const result = await s3ObjectStore.uploadAvatar(req.file, req.user.id, 'user')
     // unlink file from fs so that uploads/ will be empty after done uploading to s3
     const unlinkFile = util.promisify(fs.unlink)
     await unlinkFile(req.file.path)
