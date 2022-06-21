@@ -17,4 +17,6 @@ router
 router.put('/restaurants/:restaurantId', isStaff, adminController.editRestaurant)
 router.put('/restaurants/:restaurantId/status', isStaff, adminController.editRestaurantStatus)
 
+router.get('/users', isStaff, adminController.getUsers)
+
 module.exports = router

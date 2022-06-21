@@ -163,6 +163,20 @@ const getUserByEmail = async (email) => {
   return data
 }
 
+const getUsers = async (isBanned) => {
+  const options = {
+    raw: true,
+    nest: true
+  }
+  if (isBanned) {
+    options.where = {
+      isBanned: 1
+    }
+  }
+  const data = await User.findAll(options)
+  return data
+}
+
 module.exports = {
   User,
   getUserById,
@@ -171,5 +185,6 @@ module.exports = {
   getUsersByCategory,
   getLastStaff,
   createUser,
-  getUserByEmail
+  getUserByEmail,
+  getUsers
 }

@@ -143,7 +143,6 @@ const editRestaurantStatus = async (req, res) => {
         message: 'Restaurant status has to be reviewed by staffs other than the author!'
       })
     }
-
     if (
       (restaurant.statusId === 2 && statusId === 3) ||
       (restaurant.statusId === 1 && statusId === 2) ||
@@ -217,6 +216,20 @@ const deleteRestaurantAvatar = async (req, res) => {
   }
 }
 
+const getUsers = async (req, res) => {
+  try {
+    const isBanned = Number(req.query.isBanned)
+    const users = await userHelper.getUsers(isBanned)
+    return res.status(200).send(users)
+  } catch (error) {
+    errorLogger.error(`adminController/getUsers: ${error}`)
+    return res.status(500).send({
+      status: 'error',
+      message: 'Unable to get users list'
+    })
+  }
+}
+
 module.exports = {
   createStaff,
   modifyUserBanStatus,
@@ -225,5 +238,6 @@ module.exports = {
   uploadRestaurantAvatar,
   deleteRestaurantAvatar,
   editRestaurant,
-  editRestaurantStatus
+  editRestaurantStatus,
+  getUsers
 }
