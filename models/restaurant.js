@@ -36,6 +36,10 @@ const Restaurant = ramenDB.define(
     publish_status: {
       type: DataTypes.STRING,
       defaultValue: 'draft'
+    },
+    authorId: {
+      type: DataTypes.INTEGER,
+      allowNull: true
     }
   },
   { paranoid: true }

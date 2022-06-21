@@ -82,12 +82,13 @@ const createRestaurant = async (req, res) => {
       })
     }
     await restaurantHelper.createRestaurant({
-    name: name,
-    description: description,
-    address: address,
-    categoryId: categoryId,
-    areaId: areaId
-  })
+      name: name,
+      description: description,
+      address: address,
+      categoryId: categoryId,
+      areaId: areaId,
+      authorId: Number(req.user.id)
+    })
     return res.status(200).send({
       status: 'success',
       message: 'Successfully created a restaurant'
@@ -97,7 +98,64 @@ const createRestaurant = async (req, res) => {
     return res.status(500).send({
       status: 'error',
       message: 'Unable to create restaurant'
-    })    
+    })
+  }
+}
+
+const editRestaurant = async (req, res) => {
+  try {
+    const { restaurantId } = req.params
+    const { name, description, address, categoryId, areaId, publishStatus } = req.body
+    let restaurant = await restaurantHelper.getRestaurantByIdInBackstage(restaurantId)
+
+    restaurant.name = name ? name : restaurant.name
+    restaurant.description = description ? description : restaurant.description
+    restaurant.address = address ? address : restaurant.address
+    restaurant.categoryId = categoryId ? Number(categoryId) : restaurant.categoryId
+    restaurant.areaId = areaId ? Number(areaId) : restaurant.areaId
+    restaurant.authorId = Number(req.user.id)
+    await restaurant.save()
+
+    return res.status(200).send({
+      status: 'success',
+      message: 'Updated restaurant information successfully!'
+    })
+  } catch (error) {
+    errorLogger.error(`adminController/editRestaurant: ${error}`)
+    return res.status(500).send({
+      status: 'error',
+      message: 'Unable to edit restaurant information'
+    })
+  }
+}
+
+const editRestaurantStatus = async (req, res) => {
+  try {
+    const { restaurantId } = req.params
+    const { publishStatus } = req.body
+    const userId = Number(req.user.id)
+    let restaurant = await restaurantHelper.getRestaurantByIdInBackstage(restaurantId)
+    if (userId === Number(restaurant.authorId)) {
+      warningLogger.warn(`adminController/editRestaurantStatus: Restaurant status has to be reviewed by staffs other than the author!`)
+      return res.status(400).send({
+        status: 'error',
+        message: 'Restaurant status has to be reviewed by staffs other than the author!'
+      })
+    }
+    restaurant.publish_status = publishStatus
+    restaurant.authorId = userId
+    await restaurant.save()
+
+    return res.status(200).send({
+      status: 'success',
+      message: 'Updated restaurant status successfully!'
+    })
+  } catch (error) {
+    errorLogger.error(`adminController/editRestaurantStatus: ${error}`)
+    return res.status(500).send({
+      status: 'error',
+      message: 'Unable to edit restaurant status'
+    })
   }
 }
 
@@ -143,54 +201,6 @@ const deleteRestaurantAvatar = async (req, res) => {
     return res.status(500).send({
       status: 'error',
       message: 'Unable to delete restaurant avatar'
-    })
-  }
-}
-
-const editRestaurant = async (req, res) => {
-  try {
-    const { restaurantId } = req.params
-    const { name, description, address, categoryId, areaId, publishStatus } = req.body
-    let restaurant = await restaurantHelper.getRestaurantByIdInBackstage(restaurantId)
-
-    restaurant.name = name ? name : restaurant.name
-    restaurant.description = description ? description : restaurant.description
-    restaurant.address = address ? address : restaurant.address
-    restaurant.categoryId = categoryId ? Number(categoryId) : restaurant.categoryId
-    restaurant.areaId = areaId ? Number(areaId) : restaurant.areaId
-    await restaurant.save()
-
-    return res.status(200).send({
-      status: 'success',
-      message: 'Updated restaurant information successfully!'
-    })
-  } catch (error) {
-    errorLogger.error(`adminController/editRestaurant: ${error}`)
-    return res.status(500).send({
-      status: 'error',
-      message: 'Unable to edit restaurant information'
-    })
-  }
-}
-
-const editRestaurantStatus = async (req, res) => {
-  try {
-    const { restaurantId } = req.params
-    const { publishStatus } = req.body
-    let restaurant = await restaurantHelper.getRestaurantByIdInBackstage(restaurantId)
-
-    restaurant.publish_status = publishStatus
-    await restaurant.save()
-
-    return res.status(200).send({
-      status: 'success',
-      message: 'Updated restaurant status successfully!'
-    })
-  } catch (error) {
-    errorLogger.error(`adminController/editRestaurantStatus: ${error}`)
-    return res.status(500).send({
-      status: 'error',
-      message: 'Unable to edit restaurant status'
     })
   }
 }
