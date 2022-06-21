@@ -21,7 +21,7 @@ const roleSeed = [
 ]
 const userSeed = [
   {
-    full_name: 'test_admin',
+    full_name: 'admin',
     nick_name: 'admin',
     email: 'admin@example.com',
     password: '$2a$10$MsEjbMoiEo8ZwFWCB04b7u9P66ZzBe6a6KEBB38R7C0fx3ptw.y2C',
@@ -29,7 +29,7 @@ const userSeed = [
     roleId: 1
   },
   {
-    full_name: 'test_user1',
+    full_name: 'user1',
     nick_name: 'user1',
     email: 'user1@example.com',
     password: '$2a$10$3agOAWd9uVw.z7UScL2jCuJtxuJiebyEO2j/Lwu8Ad5nYpm8m0Jrq',
@@ -37,7 +37,7 @@ const userSeed = [
     roleId: 3
   },
   {
-    full_name: 'test_user2',
+    full_name: 'user2',
     nick_name: 'user2',
     email: 'user2@example.com',
     password: '$2a$10$fZgndkwfSfRcOdfBZkKWC.eoumU5i7igWOFXbm1hNXaTmLXWqbOnO',
@@ -46,7 +46,7 @@ const userSeed = [
     isBanned: 1
   },
   {
-    full_name: 'test_user3',
+    full_name: 'user3',
     nick_name: 'user3',
     email: 'user3@example.com',
     password: '$2a$10$UWXkJ4.Si8LWuySN0c0Thu/VlcITnl6a8qXyNSD40n4p9TcCnM3P.',
@@ -54,15 +54,15 @@ const userSeed = [
     roleId: 3
   },
   {
-    full_name: 'test_staff1',
+    full_name: 'staff1',
     nick_name: 'staff1',
     email: 'staff1@example.com',
-    password: '$2a$10$UWXkJ4.Si8LWuySN0c0Thu/VlcITnl6a8qXyNSD40n4p9TcCnM3P.',
+    password: '$2a$10$aC.fwARaaESNAqWWov6oJut/jLHf4QzyyAPXEV3R/uDplxFpMhpqW',
     description: 'staff1',
     roleId: 2
   },
   {
-    full_name: 'test_staff2',
+    full_name: 'staff2',
     nick_name: 'staff2',
     email: 'staff2@example.com',
     password: '$2a$10$guMHnfXtmRzLGypQM7MT2eX2llMH3GK8U9EGh/rk.owa3h9Hb3BFu',
