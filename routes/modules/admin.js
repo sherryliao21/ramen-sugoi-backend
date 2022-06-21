@@ -15,5 +15,6 @@ router
   .delete(adminController.deleteRestaurantAvatar)
 
 router.put('/restaurants/:restaurantId', isStaff, adminController.editRestaurant)
+router.put('/restaurants/:restaurantId/status', isStaff, adminController.editRestaurantStatus)
 
 module.exports = router
