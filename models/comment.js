@@ -60,15 +60,15 @@ User.belongsToMany(Restaurant, {
 // query methods
 const getCommentCountOnLastPost = async (authorId, restaurantId) => {
   const data = await Comment.findAll({
-      where: {
-        authorId,
-        restaurantId
-      },
-      order: [['createdAt', 'DESC']],
-      limit: 1,
-      attributes: ['commentCountOnSamePost'],
-      raw: true,
-      nest: true
+    where: {
+      authorId,
+      restaurantId
+    },
+    order: [['createdAt', 'DESC']],
+    limit: 1,
+    attributes: ['commentCountOnSamePost'],
+    raw: true,
+    nest: true
   })
   return data
 }

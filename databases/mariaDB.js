@@ -22,10 +22,8 @@ const ramenDB = new Sequelize(`mariadb://${username}:${pwd}@${host}/ramen`, {
 function authenticateDB(database, dbName) {
   database
     .authenticate()
-    .then(() =>
-      infoLogger.info(`[MariaDB] Successfully connected to '${dbName}'...`))
-    .catch((error) =>
-      errorLogger.error(`[MariaDB] '${dbName}': Connection failed, ${error.stack}`))
+    .then(() => infoLogger.info(`[MariaDB] Successfully connected to '${dbName}'...`))
+    .catch((error) => errorLogger.error(`[MariaDB] '${dbName}': Connection failed, ${error.stack}`))
 }
 authenticateDB(ramenDB, 'ramenDB')
 

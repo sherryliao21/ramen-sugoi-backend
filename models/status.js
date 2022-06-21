@@ -17,7 +17,7 @@ const Status = ramenDB.define('status', {
 const getStatusByName = async (name) => {
   const data = await Status.findOne({
     where: {
-      name: name
+      name
     },
     attributes: ['id'],
     raw: true,

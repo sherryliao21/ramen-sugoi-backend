@@ -21,7 +21,7 @@ const followUser = async (req, res) => {
         message: 'This user does not exist'
       })
     }
-    const followship = await followshipHelper.getFollowship(user.id, followingUserId) 
+    const followship = await followshipHelper.getFollowship(user.id, followingUserId)
     if (followship) {
       warningLogger.warn('followshipController/followUser: You already followed this user.')
       return res.status(400).send({
@@ -63,7 +63,7 @@ const unfollowUser = async (req, res) => {
         message: 'This user does not exist'
       })
     }
-    const followship = await followshipHelper.getFollowship(user.id, followingUserId) 
+    const followship = await followshipHelper.getFollowship(user.id, followingUserId)
     if (!followship) {
       warningLogger.warn('followshipController/followUser: You never followed this user.')
       return res.status(400).send({

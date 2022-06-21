@@ -1,9 +1,7 @@
 if (process.env.ENV !== 'production') {
   require('dotenv').config()
 }
-const {
-  S3Client, PutObjectCommand, GetObjectCommand, DeleteObjectCommand
-} = require('@aws-sdk/client-s3')
+const { S3Client, PutObjectCommand, GetObjectCommand, DeleteObjectCommand } = require('@aws-sdk/client-s3')
 const fs = require('fs')
 const { errorLogger, infoLogger } = require('../utils/logger')
 

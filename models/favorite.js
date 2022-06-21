@@ -37,7 +37,8 @@ User.belongsToMany(Restaurant, {
 const getFavorite = async (userId, restaurantId) => {
   const data = await Favorite.findOne({
     where: {
-      userId, restaurantId
+      userId,
+      restaurantId
     }
   })
   return data
@@ -45,7 +46,8 @@ const getFavorite = async (userId, restaurantId) => {
 
 const createFavorite = async (userId, restaurantId) => {
   await Favorite.create({
-    userId, restaurantId
+    userId,
+    restaurantId
   })
 }
 

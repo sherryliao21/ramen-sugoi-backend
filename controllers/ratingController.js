@@ -1,4 +1,3 @@
-const { Restaurant, Rating } = require('../models/index')
 const restaurantHelper = require('../models/restaurant')
 const ratingHelper = require('../models/rating')
 const { infoLogger, errorLogger, warningLogger } = require('../utils/logger')

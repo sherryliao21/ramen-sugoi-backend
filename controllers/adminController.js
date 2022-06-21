@@ -10,7 +10,7 @@ const { errorLogger, warningLogger } = require('../utils/logger')
 const createStaff = async (req, res) => {
   try {
     const lastStaff = await userHelper.getLastStaff()
-    const staffNumber = parseInt(lastStaff[0].full_name.slice(-1)) + 1
+    const staffNumber = parseInt(lastStaff[0].full_name.slice(-1), 10) + 1
     const baseName = `staff${staffNumber}`
     const salt = await bcrypt.genSalt(10)
     const hash = await bcrypt.hash(baseName, salt)
@@ -76,18 +76,18 @@ const createRestaurant = async (req, res) => {
     const categoryId = Number(req.body.categoryId)
     const areaId = Number(req.body.areaId)
     if (!name.trim() || !description.trim() || !address.trim() || !categoryId || !areaId) {
-      warningLogger.warn(`adminController/createRestaurant: All fields are required!`)
+      warningLogger.warn('adminController/createRestaurant: All fields are required!')
       return res.status(400).send({
         status: 'error',
         message: 'All fields are required!'
       })
     }
     await restaurantHelper.createRestaurant({
-      name: name,
-      description: description,
-      address: address,
-      categoryId: categoryId,
-      areaId: areaId,
+      name,
+      description,
+      address,
+      categoryId,
+      areaId,
       authorId: Number(req.user.id)
     })
     return res.status(200).send({
@@ -106,12 +106,12 @@ const createRestaurant = async (req, res) => {
 const editRestaurant = async (req, res) => {
   try {
     const { restaurantId } = req.params
-    const { name, description, address, categoryId, areaId, publishStatus } = req.body
-    let restaurant = await restaurantHelper.getRestaurantByIdInBackstage(restaurantId)
+    const { name, description, address, categoryId, areaId } = req.body
+    const restaurant = await restaurantHelper.getRestaurantByIdInBackstage(restaurantId)
 
-    restaurant.name = name ? name : restaurant.name
-    restaurant.description = description ? description : restaurant.description
-    restaurant.address = address ? address : restaurant.address
+    restaurant.name = name || restaurant.name
+    restaurant.description = description || restaurant.description
+    restaurant.address = address || restaurant.address
     restaurant.categoryId = categoryId ? Number(categoryId) : restaurant.categoryId
     restaurant.areaId = areaId ? Number(areaId) : restaurant.areaId
     restaurant.authorId = Number(req.user.id)
@@ -135,10 +135,10 @@ const editRestaurantStatus = async (req, res) => {
     const { restaurantId } = req.params
     const statusId = Number(req.body.statusId)
     const userId = Number(req.user.id)
-    let restaurant = await restaurantHelper.getRestaurantByIdInBackstage(restaurantId)
+    const restaurant = await restaurantHelper.getRestaurantByIdInBackstage(restaurantId)
 
     if (userId === Number(restaurant.authorId)) {
-      warningLogger.warn(`adminController/editRestaurantStatus: Restaurant status has to be reviewed by staffs other than the author!`)
+      warningLogger.warn('adminController/editRestaurantStatus: Restaurant status has to be reviewed by staffs other than the author!')
       return res.status(400).send({
         status: 'error',
         message: 'Restaurant status has to be reviewed by staffs other than the author!'
@@ -157,7 +157,7 @@ const editRestaurantStatus = async (req, res) => {
         message: 'Updated restaurant status successfully!'
       })
     }
-    warningLogger.warn(`adminController/editRestaurantStatus: Restaurant status has to be updated one level higher/lower each time!`)
+    warningLogger.warn('adminController/editRestaurantStatus: Restaurant status has to be updated one level higher/lower each time!')
     return res.status(400).send({
       status: 'error',
       message: 'Restaurant status has to be updated one level higher/lower each time!'
@@ -174,9 +174,9 @@ const editRestaurantStatus = async (req, res) => {
 const uploadRestaurantAvatar = async (req, res) => {
   try {
     const { restaurantId } = req.params
-    const file = req.file
+    const { file } = req
     if (!file) {
-      warningLogger.warn(`adminController/uploadRestaurantAvatar: File missing!`)
+      warningLogger.warn('adminController/uploadRestaurantAvatar: File missing!')
       return res.status(400).send({
         status: 'error',
         message: "File shouldn't be empty!"
@@ -250,7 +250,7 @@ const deleteComment = async (req, res) => {
     const { commentId } = req.params
     const comment = await commentHelper.getCommentById(commentId)
     if (!comment) {
-      warningLogger.warn(`adminController/deleteComment: No comment found`)
+      warningLogger.warn('adminController/deleteComment: No comment found')
       return res.status(400).send({
         status: 'error',
         message: 'This comment does not exist!'
@@ -266,7 +266,7 @@ const deleteComment = async (req, res) => {
     return res.status(500).send({
       status: 'error',
       message: 'Unable to delete comment'
-    })     
+    })
   }
 }
 

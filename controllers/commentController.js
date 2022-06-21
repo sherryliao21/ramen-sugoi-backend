@@ -43,7 +43,7 @@ const postComment = async (req, res) => {
       content,
       visibility: !user.isBanned,
       authorId: userId,
-      restaurantId: restaurantId,
+      restaurantId,
       commentCountOnSamePost: commentData.length ? commentData[0].commentCountOnSamePost + 1 : 1
     }
     await commentHelper.createComment(newComment)

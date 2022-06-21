@@ -1,6 +1,4 @@
 const jwt = require('jsonwebtoken')
-const { Op } = require('sequelize')
-const { User, Role } = require('../models/index')
 const { warningLogger, errorLogger } = require('../utils/logger')
 const userHelper = require('../models/user')
 const roleHelper = require('../models/role')

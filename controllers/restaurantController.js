@@ -1,6 +1,5 @@
 const { User } = require('../models/index')
 const restaurantHelper = require('../models/restaurant')
-const { Op } = require('sequelize')
 const { errorLogger, warningLogger } = require('../utils/logger')
 
 const getRestaurants = async (req, res) => {
@@ -52,7 +51,7 @@ const getRestaurant = async (req, res) => {
     errorLogger.error(`restaurantController/getRestaurant: ${error.stack}`)
     return res.status(500).send({
       status: 'error',
-      message: `Unable to get restaurant`
+      message: 'Unable to get restaurant'
     })
   }
 }
@@ -62,7 +61,7 @@ const getRestaurantByKeyword = async (req, res) => {
     const { keyword } = req.query
     const restaurants = await restaurantHelper.getRestaurantByKeyword(keyword)
     if (!restaurants) {
-      warningLogger.warn(`restaurantController/getRestaurant: No restaurant data for id: ${restaurantId}`)
+      warningLogger.warn('restaurantController/getRestaurant: No restaurant data with this keyword!')
       return res.status(400).send({
         statue: 'error',
         message: 'This restaurant does not exist'
@@ -87,7 +86,7 @@ const getRestaurantByKeyword = async (req, res) => {
     errorLogger.error(`restaurantController/getRestaurantByKeyword: ${error.stack}`)
     return res.status(500).send({
       status: 'error',
-      message: `Unable to get restaurant`
+      message: 'Unable to get restaurant'
     })
   }
 }
@@ -124,11 +123,7 @@ const getTop10RestaurantsByPopularity = async (req, res) => {
         }
         return response
       })
-    const sorted = result
-      .sort((a, b) => {
-        return b[modelConfig[category].count] - a[modelConfig[category].count]
-      })
-      .slice(0, 10)
+    const sorted = result.sort((a, b) => b[modelConfig[category].count] - a[modelConfig[category].count]).slice(0, 10)
 
     return res.status(200).send(sorted)
   } catch (error) {

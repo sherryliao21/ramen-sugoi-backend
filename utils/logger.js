@@ -18,13 +18,9 @@ const logRequest = morgan(':date[iso] userId::id :method :url :status :total-tim
 
 // for winston (system/application logs)
 const winston = require('winston')
-const {
-  format, transports, addColors, loggers
-} = require('winston')
+const { format, transports, addColors, loggers } = require('winston')
 
-const {
-  combine, timestamp, label, printf
-} = format
+const { combine, timestamp, label, printf } = format
 
 const customLevels = {
   levels: {
@@ -41,8 +37,7 @@ const customLevels = {
   }
 }
 addColors(customLevels.colors)
-const fixedFormat = printf(({ level, message }) =>
-  `${level} ${message}`) // timestamp can be added to parameters
+const fixedFormat = printf(({ level, message }) => `${level} ${message}`) // timestamp can be added to parameters
 
 const mode = process.env.LOGGING_MODE || 'debug'
 const silentSwitches = {

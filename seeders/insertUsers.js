@@ -82,16 +82,16 @@ const followshipSeed = [
   }
 ]
 
-const insertSeedUsers = async (roleSeed, userSeed, followshipSeed) => {
+const insertSeedUsers = async (roles, users, followships) => {
   try {
     await ramenDB.transaction(async (t) => {
-      await Role.bulkCreate(roleSeed, {
+      await Role.bulkCreate(roles, {
         transaction: t
       })
-      await User.bulkCreate(userSeed, {
+      await User.bulkCreate(users, {
         transaction: t
       })
-      await Followship.bulkCreate(followshipSeed, {
+      await Followship.bulkCreate(followships, {
         transaction: t
       })
     })

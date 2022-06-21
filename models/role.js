@@ -16,7 +16,7 @@ const Role = ramenDB.define('role', {
 // query methods
 const getRoleById = async (roleId) => {
   const data = await Role.findByPk(roleId, {
-    raw: true, 
+    raw: true,
     nest: true
   })
   return data

@@ -1,6 +1,5 @@
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
-const { Op } = require('sequelize')
 const userHelper = require('../models/user')
 const { errorLogger, warningLogger } = require('../utils/logger')
 const { User, Restaurant } = require('../models/index')
@@ -175,11 +174,7 @@ const getTop10UsersByCategory = async (req, res) => {
         }
         return response
       })
-    const sorted = result
-      .sort((a, b) => {
-        return b[modelConfig[category].count] - a[modelConfig[category].count]
-      })
-      .slice(0, 10)
+    const sorted = result.sort((a, b) => b[modelConfig[category].count] - a[modelConfig[category].count]).slice(0, 10)
 
     return res.status(200).send(sorted)
   } catch (error) {
@@ -230,7 +225,7 @@ const getUser = async (req, res) => {
     errorLogger.error(`userController/getUser: ${error.stack}`)
     return res.status(500).send({
       status: 'error',
-      message: `Unable to get user`
+      message: 'Unable to get user'
     })
   }
 }
