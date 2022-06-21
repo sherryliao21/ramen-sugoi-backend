@@ -166,7 +166,6 @@ const getRestaurantByStatus = async (status) => {
 }
 
 const createRestaurant = async (content) => {
-  console.log(content)
   await Restaurant.create(content)
 }
 

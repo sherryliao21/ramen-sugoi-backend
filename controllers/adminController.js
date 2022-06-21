@@ -101,15 +101,15 @@ const createRestaurant = async (req, res) => {
   }
 }
 
-const uploadRestaurantPic = async (req, res) => {
+const uploadRestaurantAvatar = async (req, res) => {
   try {
     const { restaurantId } = req.params
     const file = req.file
     if (!file) {
-      warningLogger.warn(`adminController/uploadRestaurantPic: File missing!`)
+      warningLogger.warn(`adminController/uploadRestaurantAvatar: File missing!`)
       return res.status(400).send({
         status: 'error',
-        message: 'File shouldn\'t be empty!'
+        message: "File shouldn't be empty!"
       })
     }
     await s3ObjectStore.uploadRestaurantPic(file, restaurantId)
@@ -121,11 +121,11 @@ const uploadRestaurantPic = async (req, res) => {
       message: 'Successfully uploaded a restaurant pic'
     })
   } catch (error) {
-    errorLogger.error(`adminController/uploadRestaurantPic: ${error.stack}`)
+    errorLogger.error(`adminController/uploadRestaurantAvatar: ${error.stack}`)
     return res.status(500).send({
       status: 'error',
       message: 'Unable to upload restaurant pic'
-    }) 
+    })
   }
 }
 
@@ -134,5 +134,5 @@ module.exports = {
   modifyUserBanStatus,
   getRestaurantByStatus,
   createRestaurant,
-  uploadRestaurantPic
+  uploadRestaurantAvatar
 }
