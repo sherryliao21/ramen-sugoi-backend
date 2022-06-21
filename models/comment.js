@@ -95,10 +95,20 @@ const getCommentById = async (commentId) => {
   return data
 }
 
+const getComments = async (includeDeleted) => {
+  const options = {}
+  if (includeDeleted) {
+    options.paranoid = false
+  }
+  const data = await Comment.findAll(options)
+  return data
+}
+
 module.exports = {
   Comment,
   getCommentCountOnLastPost,
   createComment,
   getCommentById,
-  getLatestVisibleComments
+  getLatestVisibleComments,
+  getComments
 }

@@ -18,5 +18,6 @@ router.put('/restaurants/:restaurantId', isStaff, adminController.editRestaurant
 router.put('/restaurants/:restaurantId/status', isStaff, adminController.editRestaurantStatus)
 
 router.get('/users', isStaff, adminController.getUsers)
+router.get('/comments', isStaff, adminController.getComments)
 
 module.exports = router

@@ -3,7 +3,8 @@ const util = require('util')
 const fs = require('fs')
 const userHelper = require('../models/user')
 const restaurantHelper = require('../models/restaurant')
-const s3ObjectStore  = require('../service/s3')
+const commentHelper = require('../models/comment')
+const s3ObjectStore = require('../service/s3')
 const { errorLogger, warningLogger } = require('../utils/logger')
 
 const createStaff = async (req, res) => {
@@ -230,6 +231,20 @@ const getUsers = async (req, res) => {
   }
 }
 
+const getComments = async (req, res) => {
+  try {
+    const includeDeleted = Number(req.query.includeDeleted)
+    const comments = await commentHelper.getComments(includeDeleted)
+    return res.status(200).send(comments)
+  } catch (error) {
+    errorLogger.error(`adminController/getComments: ${error}`)
+    return res.status(500).send({
+      status: 'error',
+      message: 'Unable to get comments list'
+    })    
+  }
+}
+
 module.exports = {
   createStaff,
   modifyUserBanStatus,
@@ -239,5 +254,6 @@ module.exports = {
   deleteRestaurantAvatar,
   editRestaurant,
   editRestaurantStatus,
-  getUsers
+  getUsers,
+  getComments
 }
