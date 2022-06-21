@@ -166,7 +166,8 @@ const getUserByEmail = async (email) => {
 const getUsers = async (isBanned) => {
   const options = {
     raw: true,
-    nest: true
+    nest: true,
+    attributes: ['id', 'full_name', 'nick_name', 'email', 'description', 'isBanned', 'roleId' ]
   }
   if (isBanned) {
     options.where = {
