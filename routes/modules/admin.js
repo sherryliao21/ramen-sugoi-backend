@@ -14,4 +14,6 @@ router
   .post(upload.single('restaurant'), adminController.uploadRestaurantAvatar)
   .delete(adminController.deleteRestaurantAvatar)
 
+router.put('/restaurants/:restaurantId', isStaff, adminController.editRestaurant)
+
 module.exports = router

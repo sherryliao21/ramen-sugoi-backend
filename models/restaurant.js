@@ -169,6 +169,11 @@ const createRestaurant = async (content) => {
   await Restaurant.create(content)
 }
 
+const getRestaurantByIdInBackstage = async (restaurantId) => {
+  const data = await Restaurant.findByPk(restaurantId)
+  return data
+}
+
 module.exports = {
   Restaurant,
   getRestaurantById,
@@ -176,5 +181,6 @@ module.exports = {
   getRestaurantByKeyword,
   getRestaurantsByPopularity,
   getRestaurantByStatus,
-  createRestaurant
+  createRestaurant,
+  getRestaurantByIdInBackstage
 }

@@ -118,13 +118,13 @@ const uploadRestaurantAvatar = async (req, res) => {
 
     return res.status(200).send({
       status: 'success',
-      message: 'Successfully uploaded a restaurant pic'
+      message: 'Successfully uploaded/updated a restaurant pic'
     })
   } catch (error) {
     errorLogger.error(`adminController/uploadRestaurantAvatar: ${error.stack}`)
     return res.status(500).send({
       status: 'error',
-      message: 'Unable to upload restaurant pic'
+      message: 'Unable to upload/update restaurant pic'
     })
   }
 }
@@ -147,11 +147,37 @@ const deleteRestaurantAvatar = async (req, res) => {
   }
 }
 
+const editRestaurant = async (req, res) => {
+  try {
+    const { restaurantId } = req.params
+    const { name, description, address, categoryId, areaId, publishStatus } = req.body
+    let restaurant = await restaurantHelper.getRestaurantByIdInBackstage(restaurantId)
+    console.log(restaurant)
+    restaurant.name = name ? name : restaurant.name
+    restaurant.description = description ? description : restaurant.description
+    restaurant.address = address ? address : restaurant.address
+    restaurant.categoryId = categoryId ? Number(categoryId) : restaurant.categoryId
+    restaurant.areaId = areaId ? Number(areaId) : restaurant.areaId
+    await restaurant.save()
+    return res.status(200).send({
+      status: 'success',
+      message: 'Updated restaurant information successfully!'
+    })
+  } catch (error) {
+    errorLogger.error(`adminController/editRestaurant: ${error}`)
+    return res.status(500).send({
+      status: 'error',
+      message: 'Unable to edit restaurant information'
+    })
+  }
+}
+
 module.exports = {
   createStaff,
   modifyUserBanStatus,
   getRestaurantByStatus,
   createRestaurant,
   uploadRestaurantAvatar,
-  deleteRestaurantAvatar
+  deleteRestaurantAvatar,
+  editRestaurant
 }
