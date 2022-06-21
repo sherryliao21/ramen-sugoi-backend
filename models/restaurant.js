@@ -3,6 +3,7 @@ const ramenDB = require('../databases/mariaDB')
 const { Area } = require('./area')
 const { Category } = require('./category')
 const { User } = require('./user')
+const { Status, getStatusByName } = require('./status')
 
 const Restaurant = ramenDB.define(
   'restaurant',
@@ -33,9 +34,9 @@ const Restaurant = ramenDB.define(
     areaId: {
       type: DataTypes.INTEGER
     },
-    publish_status: {
-      type: DataTypes.STRING,
-      defaultValue: 'draft'
+    statusId: {
+      type: DataTypes.INTEGER,
+      defaultValue: 1
     },
     authorId: {
       type: DataTypes.INTEGER,
@@ -44,6 +45,12 @@ const Restaurant = ramenDB.define(
   },
   { paranoid: true }
 )
+
+Status.hasOne(Restaurant)
+Restaurant.belongsTo(Status, {
+  foreignKey: 'statusId',
+  constraints: false
+})
 
 Area.hasOne(Restaurant)
 Restaurant.belongsTo(Area, {
@@ -63,9 +70,7 @@ const getRestaurantById = async (restaurantId, includeRelatedTables) => {
   let options = {
     where: {
       id: restaurantId,
-      publish_status: {
-        [Op.eq]: 'published'
-      }
+      statusId: 3
     },
     raw: true,
     nest: true
@@ -74,9 +79,7 @@ const getRestaurantById = async (restaurantId, includeRelatedTables) => {
     options = {
       where: {
         id: restaurantId,
-        publish_status: {
-          [Op.eq]: 'published'
-        }
+        statusId: 3
       },
       nest: true,
       attributes: ['id', 'name', 'profile_pic', 'description', 'address', 'categoryId', 'areaId'],
@@ -95,9 +98,7 @@ const getRestaurantById = async (restaurantId, includeRelatedTables) => {
 
 const getRestaurantsByCategories = async (categoryId, areaId, isLatest) => {
   const keys = {
-    publish_status: {
-      [Op.eq]: 'published'
-    }
+    statusId: 3
   }
   if (categoryId && categoryId.trim()) keys.categoryId = categoryId
   if (areaId && areaId.trim()) keys.areaId = areaId
@@ -119,9 +120,7 @@ const getRestaurantByKeyword = async (keyword) => {
       name: {
         [Op.substring]: keyword
       },
-      publish_status: {
-        [Op.eq]: 'published'
-      }
+      statusId: 3
     },
     nest: true,
     attributes: ['id', 'name', 'profile_pic', 'description', 'address', 'categoryId', 'areaId'],
@@ -139,9 +138,7 @@ const getRestaurantByKeyword = async (keyword) => {
 const getRestaurantsByPopularity = async (category, modelConfig) => {
   const options = {
     where: {
-      publish_status: {
-        [Op.eq]: 'published'
-      }
+      statusId: 3
     },
     attributes: ['id', 'name', 'profile_pic', 'description', 'address', 'categoryId', 'areaId'],
     include: { model: modelConfig[category].model, as: modelConfig[category].tableName },
@@ -153,11 +150,10 @@ const getRestaurantsByPopularity = async (category, modelConfig) => {
 
 const getRestaurantByStatus = async (status) => {
   let whereOption = {}
-  if (status !== 'all') {
+  if (status !== 'All') {
+    const data = await getStatusByName(status)
     whereOption = {
-      publish_status: {
-        [Op.eq]: status
-      }
+      statusId: data.id
     }
   }
   const data = await Restaurant.findAll({

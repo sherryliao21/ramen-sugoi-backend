@@ -4,6 +4,7 @@ if (process.env.ENV !== 'production') {
 
 const ramenDB = require('../databases/mariaDB')
 const { Restaurant, Area, Category } = require('../models/index')
+const { Status } = require('../models/status')
 const { infoLogger, errorLogger } = require('../utils/logger')
 
 const seedCategories = [
@@ -17,6 +18,12 @@ const seedAreas = [
   { id: 2, name: '台中市' }
 ]
 
+const seedStatus = [
+  { id: 1, name: 'Draft' },
+  { id: 2, name: 'Approved' },
+  { id: 3, name: 'Published' }
+]
+
 const seedRestaurants = [
   {
     name: '一蘭',
@@ -24,7 +31,7 @@ const seedRestaurants = [
     address: '台北市羅斯福路 123 號',
     categoryId: 2,
     areaId: 1,
-    publish_status: 'draft'
+    statusId: 1
   },
   {
     name: '一樂',
@@ -32,7 +39,7 @@ const seedRestaurants = [
     address: '台北市長安東路 277 號',
     categoryId: 2,
     areaId: 1,
-    publish_status: 'published'
+    statusId: 2
   },
   {
     name: '丸',
@@ -40,13 +47,14 @@ const seedRestaurants = [
     address: '台中市台灣大道 25 號',
     categoryId: 1,
     areaId: 2,
-    publish_status: 'published'
+    statusId: 3
   }
 ]
 
-const insertSeedRestaurants = async (areas, categories, restaurants) => {
+const insertSeedRestaurants = async (status, areas, categories, restaurants) => {
   try {
     await ramenDB.transaction(async (t) => {
+      await Status.bulkCreate(status, { transaction: t })
       await Area.bulkCreate(areas, { transaction: t })
       await Category.bulkCreate(categories, { transaction: t })
       await Restaurant.bulkCreate(restaurants, { transaction: t })
@@ -59,4 +67,4 @@ const insertSeedRestaurants = async (areas, categories, restaurants) => {
   }
 }
 
-insertSeedRestaurants(seedAreas, seedCategories, seedRestaurants)
+insertSeedRestaurants(seedStatus, seedAreas, seedCategories, seedRestaurants)

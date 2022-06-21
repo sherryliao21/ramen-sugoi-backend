@@ -132,7 +132,7 @@ const editRestaurant = async (req, res) => {
 const editRestaurantStatus = async (req, res) => {
   try {
     const { restaurantId } = req.params
-    const { publishStatus } = req.body
+    const statusId = Number(req.body.statusId)
     const userId = Number(req.user.id)
     let restaurant = await restaurantHelper.getRestaurantByIdInBackstage(restaurantId)
 
@@ -145,12 +145,12 @@ const editRestaurantStatus = async (req, res) => {
     }
 
     if (
-      (restaurant.publish_status === 'approved' && publishStatus === 'published') ||
-      (restaurant.publish_status === 'draft' && publishStatus === 'approved') ||
-      (restaurant.publish_status === 'published' && publishStatus === 'draft')
+      (restaurant.statusId === 2 && statusId === 3) ||
+      (restaurant.statusId === 1 && statusId === 2) ||
+      (restaurant.statusId === 3 && statusId === 1)
     ) {
       restaurant.authorId = userId
-      restaurant.publish_status = publishStatus
+      restaurant.statusId = statusId
       await restaurant.save()
       return res.status(200).send({
         status: 'success',
