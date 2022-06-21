@@ -241,7 +241,32 @@ const getComments = async (req, res) => {
     return res.status(500).send({
       status: 'error',
       message: 'Unable to get comments list'
-    })    
+    })
+  }
+}
+
+const deleteComment = async (req, res) => {
+  try {
+    const { commentId } = req.params
+    const comment = await commentHelper.getCommentById(commentId)
+    if (!comment) {
+      warningLogger.warn(`adminController/deleteComment: No comment found`)
+      return res.status(400).send({
+        status: 'error',
+        message: 'This comment does not exist!'
+      })
+    }
+    await comment.destroy()
+    return res.status(200).send({
+      status: 'success',
+      message: 'Successfully deleted comment!'
+    })
+  } catch (error) {
+    errorLogger.error(`adminController/deleteComment: ${error}`)
+    return res.status(500).send({
+      status: 'error',
+      message: 'Unable to delete comment'
+    })     
   }
 }
 
@@ -255,5 +280,6 @@ module.exports = {
   editRestaurant,
   editRestaurantStatus,
   getUsers,
-  getComments
+  getComments,
+  deleteComment
 }

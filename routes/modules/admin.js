@@ -19,5 +19,6 @@ router.put('/restaurants/:restaurantId/status', isStaff, adminController.editRes
 
 router.get('/users', isStaff, adminController.getUsers)
 router.get('/comments', isStaff, adminController.getComments)
+router.delete('/comments/:commentId', isStaff, adminController.deleteComment)
 
 module.exports = router
