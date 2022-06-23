@@ -12,27 +12,26 @@ const createStaff = async (req, res) => {
     const user = await userHelper.getAdmin(req.user.id)
     if (!user) {
       warningLogger.warn('adminController/createStaff: Only the admin has permission to create staff')
-      return res.status(400).send({
+      return res.status(403).send({
         status: 'error',
         message: 'Only the admin has permission to create staff'
-      })      
+      })
     }
     const lastStaff = await userHelper.getLastStaff()
-    console.log(lastStaff)
-    const staffNumber = parseInt(lastStaff[0].full_name.slice(-1), 10) + 1
+    const staffNumber = lastStaff ? parseInt(lastStaff[0].full_name.slice(-1), 10) + 1 : 1
     const baseName = `staff${staffNumber}`
     const salt = await bcrypt.genSalt(10)
-    const hash = await bcrypt.hash(baseName, salt)
+    const password = await bcrypt.hash(baseName, salt)
     const email = `${baseName}@example.com`
     const staffData = {
       email,
-      password: hash,
+      password,
       full_name: baseName,
       roleId: 2,
       description: baseName
     }
-    console.log(staffData)
     await userHelper.createUser(staffData)
+
     return res.status(200).send({
       status: 'success',
       message: 'Successfully created a staff!'
