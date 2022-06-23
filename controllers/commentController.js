@@ -8,9 +8,10 @@ const postComment = async (req, res) => {
     const userId = req.user.id
     const { content, restaurantId } = req.body
     const user = await userHelper.getUserById(userId)
+
     if (!user) {
       warningLogger.warn('commentController/postComment: This user does not exist.')
-      return res.status(400).send({
+      return res.status(403).send({
         status: 'error',
         message: 'This user does not exist'
       })
@@ -18,7 +19,7 @@ const postComment = async (req, res) => {
     const restaurant = await restaurantHelper.getRestaurantById(restaurantId)
     if (!restaurant) {
       warningLogger.warn('commentController/postComment: This restaurant does not exist.')
-      return res.status(400).send({
+      return res.status(404).send({
         status: 'error',
         message: 'This restaurant does not exist'
       })
@@ -48,7 +49,8 @@ const postComment = async (req, res) => {
     }
     await commentHelper.createComment(newComment)
     infoLogger.info(`commentController/postComment: userId: ${userId} commented on restaurantId: ${restaurantId}!`)
-    return res.status(200).send({
+
+    return res.status(201).send({
       status: 'success',
       message: 'Successfully posted a comment!'
     })
@@ -66,9 +68,10 @@ const editComment = async (req, res) => {
     const { commentId } = req.params
     const { content } = req.body
     const user = await userHelper.getUserById(userId)
+
     if (!user) {
       warningLogger.warn('commentController/editComment: This user does not exist.')
-      return res.status(400).send({
+      return res.status(403).send({
         status: 'error',
         message: 'This user does not exist'
       })
@@ -83,6 +86,7 @@ const editComment = async (req, res) => {
     const comment = await commentHelper.getCommentById(commentId)
     comment.content = content
     await comment.save()
+
     infoLogger.info(`commentController/editComment: userId: ${userId} updated comment on restaurantId: ${comment.restaurantId}!`)
     return res.status(200).send({
       status: 'success',
@@ -102,9 +106,10 @@ const deleteComment = async (req, res) => {
     const userId = req.user.id
     const { commentId } = req.params
     const user = await userHelper.getUserById(userId)
+
     if (!user) {
       warningLogger.warn('commentController/deleteComment: This user does not exist.')
-      return res.status(400).send({
+      return res.status(403).send({
         status: 'error',
         message: 'This user does not exist'
       })
@@ -112,13 +117,14 @@ const deleteComment = async (req, res) => {
     const comment = await commentHelper.getCommentById(commentId)
     if (!comment) {
       warningLogger.warn('commentController/deleteComment: This comment does not exist.')
-      return res.status(400).send({
+      return res.status(404).send({
         status: 'error',
         message: 'This comment does not exist'
       })
     }
     await comment.destroy()
     infoLogger.info(`commentController/deleteComment: userId: ${userId} deleted comment on restaurantId: ${comment.restaurantId}!`)
+
     return res.status(200).send({
       status: 'success',
       message: 'Successfully deleted a comment!'
@@ -135,6 +141,7 @@ const deleteComment = async (req, res) => {
 const getLatestComments = async (req, res) => {
   try {
     const comments = await commentHelper.getLatestVisibleComments()
+
     return res.status(200).send(comments)
   } catch (error) {
     errorLogger.error(`commentController/getLatestComments: ${error.stack}`)

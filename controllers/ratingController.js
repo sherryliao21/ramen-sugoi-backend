@@ -8,9 +8,10 @@ const rateRestaurant = async (req, res) => {
     const { restaurantId } = req.params
     const { stars } = req.body
     const restaurant = await restaurantHelper.getRestaurantById(restaurantId)
+
     if (!restaurant) {
       warningLogger.warn('ratingController/rateRestaurant: This restaurant does not exist.')
-      return res.status(400).send({
+      return res.status(404).send({
         status: 'error',
         message: 'This restaurant does not exist'
       })
@@ -23,6 +24,13 @@ const rateRestaurant = async (req, res) => {
         message: 'You already rated this restaurant'
       })
     }
+    if (!stars) {
+      warningLogger.warn('ratingController/rateRestaurant: All fields are required!')
+      return res.status(400).send({
+        status: 'error',
+        message: 'All fields are required!'
+      })
+    }
     if (parseInt(stars, 10) > 5 || parseInt(stars, 10) <= 0) {
       warningLogger.warn('ratingController/rateRestaurant: Invalid rating')
       return res.status(400).send({
@@ -32,6 +40,7 @@ const rateRestaurant = async (req, res) => {
     }
     await ratingHelper.createRating(userId, restaurantId, stars)
     infoLogger.info(`ratingController/rateRestaurant: Rated restaurantId: ${restaurantId} successfully!`)
+
     return res.status(200).send({
       status: 'success',
       message: `Rated restaurantId: ${restaurantId} successfully!`
@@ -51,9 +60,10 @@ const editRestaurantRating = async (req, res) => {
     const { restaurantId } = req.params
     const { stars } = req.body
     const restaurant = await restaurantHelper.getRestaurantById(restaurantId)
+
     if (!restaurant) {
       warningLogger.warn('ratingController/editRestaurantRating: This restaurant does not exist.')
-      return res.status(400).send({
+      return res.status(404).send({
         status: 'error',
         message: 'This restaurant does not exist'
       })
@@ -61,9 +71,16 @@ const editRestaurantRating = async (req, res) => {
     const rating = await ratingHelper.getRating(userId, restaurantId)
     if (!rating) {
       warningLogger.warn('ratingController/editRestaurantRating: You never rated this restaurant.')
-      return res.status(400).send({
+      return res.status(404).send({
         status: 'error',
         message: 'You never rated this restaurant'
+      })
+    }
+    if (!stars) {
+      warningLogger.warn('ratingController/editRestaurantRating: All fields are required!')
+      return res.status(400).send({
+        status: 'error',
+        message: 'All fields are required!'
       })
     }
     if (parseInt(stars, 10) > 5 || parseInt(stars, 10) <= 0) {
@@ -81,7 +98,7 @@ const editRestaurantRating = async (req, res) => {
       message: `Updated restaurantId: ${restaurantId} rating successfully!`
     })
   } catch (error) {
-    errorLogger.error(`ratingController/editRestaurantRating: ${error}`)
+    errorLogger.error(`ratingController/editRestaurantRating: ${error.stack}`)
     return res.status(500).send({
       status: 'error',
       message: 'Unable to update restaurant rating'

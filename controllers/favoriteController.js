@@ -7,9 +7,10 @@ const likeRestaurant = async (req, res) => {
     const userId = req.user.id
     const { restaurantId } = req.params
     const restaurant = await restaurantHelper.getRestaurantById(restaurantId)
+
     if (!restaurant) {
       warningLogger.warn('favoriteController/likeRestaurant: This restaurant does not exist.')
-      return res.status(400).send({
+      return res.status(404).send({
         status: 'error',
         message: 'This restaurant does not exist'
       })
@@ -24,6 +25,7 @@ const likeRestaurant = async (req, res) => {
     }
     await favoriteHelper.createFavorite(userId, restaurantId)
     infoLogger.info(`favoriteController/likeRestaurant: Liked restaurantId: ${restaurantId} successfully!`)
+
     return res.status(200).send({
       status: 'success',
       message: `Liked restaurantId: ${restaurantId} successfully!`
@@ -42,9 +44,10 @@ const unlikeRestaurant = async (req, res) => {
     const userId = req.user.id
     const { restaurantId } = req.params
     const restaurant = await restaurantHelper.getRestaurantById(restaurantId)
+
     if (!restaurant) {
       warningLogger.warn('favoriteController/unlikeRestaurant: This restaurant does not exist.')
-      return res.status(400).send({
+      return res.status(404).send({
         status: 'error',
         message: 'This restaurant does not exist'
       })
@@ -52,19 +55,20 @@ const unlikeRestaurant = async (req, res) => {
     const favorite = await favoriteHelper.getFavorite(userId, restaurantId)
     if (!favorite) {
       warningLogger.warn('favoriteController/unlikeRestaurant: You never liked this restaurant.')
-      return res.status(400).send({
+      return res.status(404).send({
         status: 'error',
         message: 'You never liked this restaurant'
       })
     }
     await favorite.destroy()
     infoLogger.info(`favoriteController/unlikeRestaurant: Unliked restaurantId: ${restaurantId} successfully!`)
+
     return res.status(200).send({
       status: 'success',
       message: `Unliked restaurantId: ${restaurantId} successfully!`
     })
   } catch (error) {
-    errorLogger.error(`favoriteController/unlikeRestaurant: ${error}`)
+    errorLogger.error(`favoriteController/unlikeRestaurant: ${error.stack}`)
     return res.status(500).send({
       status: 'error',
       message: 'Unable to unlike restaurant'
