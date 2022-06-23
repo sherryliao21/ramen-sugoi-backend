@@ -27,12 +27,13 @@ const createStaff = async (req, res) => {
       email,
       password,
       full_name: baseName,
-      roleId: 2,
-      description: baseName
+      nick_name: baseName,
+      description: baseName,
+      roleId: 2
     }
     await userHelper.createUser(staffData)
 
-    return res.status(200).send({
+    return res.status(201).send({
       status: 'success',
       message: 'Successfully created a staff!'
     })
@@ -50,17 +51,16 @@ const deleteStaff = async (req, res) => {
     const user = await userHelper.getAdmin(req.user.id)
     if (!user) {
       warningLogger.warn('adminController/deleteStaff: Only the admin has permission to delete staff')
-      return res.status(400).send({
+      return res.status(403).send({
         status: 'error',
         message: 'Only the admin has permission to delete staff'
-      })      
+      })
     }
     const { userId } = req.params
-    const isModel = true
-    const staff = await userHelper.getUserById(userId, isModel)
+    const staff = await userHelper.getUserById(userId, (isModel = true))
     if (!staff) {
       warningLogger.warn('adminController/deleteStaff: This staff does not exist')
-      return res.status(400).send({
+      return res.status(403).send({
         status: 'error',
         message: 'adminController/deleteStaff: This staff does not exist'
       })
@@ -68,14 +68,14 @@ const deleteStaff = async (req, res) => {
     await staff.destroy()
     return res.status(200).send({
       status: 'success',
-      message: 'adminController/deleteStaff: Successfully deleted staff!'
+      message: 'Successfully deleted staff!'
     })
   } catch (error) {
     errorLogger.error(`adminController/deleteStaff: ${error.stack}`)
     return res.status(500).send({
       status: 'error',
       message: 'Unable to delete staff'
-    })    
+    })
   }
 }
 

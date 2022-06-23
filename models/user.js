@@ -141,7 +141,8 @@ const getLastStaff = async () => {
     order: [['full_name', 'DESC']],
     limit: 1,
     nest: true,
-    raw: true
+    raw: true,
+    paranoid: false // get soft deletion record
   })
 
   return data
