@@ -82,10 +82,18 @@ const deleteStaff = async (req, res) => {
 const modifyUserBanStatus = async (req, res) => {
   try {
     const { userId } = req.params
-    const isModel = true
-    const user = await userHelper.getUserById(userId, isModel)
+    const user = await userHelper.getUserById(userId, (isModel = true))
+    if (!user) {
+      warningLogger.warn('adminController/modifyUserBanStatus: This user does not exist!')
+      return res.status(404).send({
+        status: 'error',
+        message: 'This user does not exist!'
+      })
+    }
+
     user.isBanned = !user.isBanned
     await user.save()
+
     return res.status(200).send({
       status: 'success',
       message: `Successfully modified. User status is now: ${user.isBanned ? 'banned' : 'active'}`
@@ -103,6 +111,7 @@ const getRestaurantByStatus = async (req, res) => {
   try {
     const { status } = req.query
     const restaurants = await restaurantHelper.getRestaurantByStatus(status)
+
     return res.status(200).send(restaurants)
   } catch (error) {
     errorLogger.error(`adminController/getRestaurantByStatus: ${error.stack}`)
@@ -118,6 +127,7 @@ const createRestaurant = async (req, res) => {
     const { name, description, address } = req.body
     const categoryId = Number(req.body.categoryId)
     const areaId = Number(req.body.areaId)
+
     if (!name.trim() || !description.trim() || !address.trim() || !categoryId || !areaId) {
       warningLogger.warn('adminController/createRestaurant: All fields are required!')
       return res.status(400).send({
@@ -133,7 +143,7 @@ const createRestaurant = async (req, res) => {
       areaId,
       authorId: Number(req.user.id)
     })
-    return res.status(200).send({
+    return res.status(201).send({
       status: 'success',
       message: 'Successfully created a restaurant'
     })
@@ -165,7 +175,7 @@ const editRestaurant = async (req, res) => {
       message: 'Updated restaurant information successfully!'
     })
   } catch (error) {
-    errorLogger.error(`adminController/editRestaurant: ${error}`)
+    errorLogger.error(`adminController/editRestaurant: ${error.stack}`)
     return res.status(500).send({
       status: 'error',
       message: 'Unable to edit restaurant information'
@@ -182,7 +192,7 @@ const editRestaurantStatus = async (req, res) => {
 
     if (userId === Number(restaurant.authorId)) {
       warningLogger.warn('adminController/editRestaurantStatus: Restaurant status has to be reviewed by staffs other than the author!')
-      return res.status(400).send({
+      return res.status(403).send({
         status: 'error',
         message: 'Restaurant status has to be reviewed by staffs other than the author!'
       })
@@ -195,6 +205,7 @@ const editRestaurantStatus = async (req, res) => {
       restaurant.authorId = userId
       restaurant.statusId = statusId
       await restaurant.save()
+
       return res.status(200).send({
         status: 'success',
         message: 'Updated restaurant status successfully!'
@@ -206,7 +217,7 @@ const editRestaurantStatus = async (req, res) => {
       message: 'Restaurant status has to be updated one level higher/lower each time!'
     })
   } catch (error) {
-    errorLogger.error(`adminController/editRestaurantStatus: ${error}`)
+    errorLogger.error(`adminController/editRestaurantStatus: ${error.stack}`)
     return res.status(500).send({
       status: 'error',
       message: 'Unable to edit restaurant status'
@@ -252,7 +263,7 @@ const deleteRestaurantAvatar = async (req, res) => {
       message: 'Deleted restaurant avatar successfully!'
     })
   } catch (error) {
-    errorLogger.error(`adminController/deleteRestaurantAvatar: ${error}`)
+    errorLogger.error(`adminController/deleteRestaurantAvatar: ${error.stack}`)
     return res.status(500).send({
       status: 'error',
       message: 'Unable to delete restaurant avatar'
@@ -264,9 +275,10 @@ const getUsers = async (req, res) => {
   try {
     const isBanned = Number(req.query.isBanned)
     const users = await userHelper.getUsers(isBanned)
+
     return res.status(200).send(users)
   } catch (error) {
-    errorLogger.error(`adminController/getUsers: ${error}`)
+    errorLogger.error(`adminController/getUsers: ${error.stack}`)
     return res.status(500).send({
       status: 'error',
       message: 'Unable to get users list'
@@ -278,9 +290,10 @@ const getComments = async (req, res) => {
   try {
     const includeDeleted = Number(req.query.includeDeleted)
     const comments = await commentHelper.getComments(includeDeleted)
+
     return res.status(200).send(comments)
   } catch (error) {
-    errorLogger.error(`adminController/getComments: ${error}`)
+    errorLogger.error(`adminController/getComments: ${error.stack}`)
     return res.status(500).send({
       status: 'error',
       message: 'Unable to get comments list'
@@ -292,20 +305,22 @@ const deleteComment = async (req, res) => {
   try {
     const { commentId } = req.params
     const comment = await commentHelper.getCommentById(commentId)
+
     if (!comment) {
       warningLogger.warn('adminController/deleteComment: No comment found')
-      return res.status(400).send({
+      return res.status(404).send({
         status: 'error',
         message: 'This comment does not exist!'
       })
     }
     await comment.destroy()
+
     return res.status(200).send({
       status: 'success',
       message: 'Successfully deleted comment!'
     })
   } catch (error) {
-    errorLogger.error(`adminController/deleteComment: ${error}`)
+    errorLogger.error(`adminController/deleteComment: ${error.stack}`)
     return res.status(500).send({
       status: 'error',
       message: 'Unable to delete comment'
