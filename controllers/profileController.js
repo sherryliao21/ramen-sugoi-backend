@@ -9,7 +9,7 @@ const getProfile = async (req, res) => {
     const userId = req.user.id
     const user = await User.findByPk(userId, { nest: true, raw: true })
     if (!user) {
-      return res.status(401).send({
+      return res.status(403).send({
         status: 'error',
         message: 'You have no permission to perform this action!'
       })
@@ -37,7 +37,7 @@ const editProfile = async (req, res) => {
     const { fullName, nickName, description } = req.body
     const user = await User.findByPk(req.user.id)
     if (!user) {
-      return res.status(401).send({
+      return res.status(403).send({
         status: 'error',
         message: 'You have no permission to perform this action!'
       })
@@ -71,7 +71,7 @@ const uploadAvatar = async (req, res) => {
     }
     const user = await User.findByPk(req.user.id)
     if (!user) {
-      return res.status(401).send({
+      return res.status(403).send({
         status: 'error',
         message: 'You have no permission to perform this action!'
       })
@@ -119,7 +119,7 @@ const deleteAvatar = async (req, res) => {
   try {
     const user = await User.findByPk(req.user.id)
     if (!user) {
-      return res.status(401).send({
+      return res.status(403).send({
         status: 'error',
         message: 'You have no permission to perform this action!'
       })
