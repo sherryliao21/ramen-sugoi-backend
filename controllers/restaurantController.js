@@ -27,7 +27,7 @@ const getRestaurant = async (req, res) => {
     const restaurant = await restaurantHelper.getRestaurantById(restaurantId, includeRelatedTables)
     if (!restaurant) {
       warningLogger.warn(`restaurantController/getRestaurant: No restaurant data for id: ${restaurantId}`)
-      return res.status(400).send({
+      return res.status(404).send({
         statue: 'error',
         message: 'This restaurant does not exist'
       })
@@ -62,7 +62,7 @@ const getRestaurantByKeyword = async (req, res) => {
     const restaurants = await restaurantHelper.getRestaurantByKeyword(keyword)
     if (!restaurants) {
       warningLogger.warn('restaurantController/getRestaurant: No restaurant data with this keyword!')
-      return res.status(400).send({
+      return res.status(404).send({
         statue: 'error',
         message: 'This restaurant does not exist'
       })

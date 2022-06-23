@@ -8,14 +8,14 @@ const userLogin = async (req, res) => {
   try {
     const { email, password } = req.body
     if (!email.trim() || !password.trim()) {
-      return res.status(401).send({
+      return res.status(400).send({
         status: 'error',
         message: 'Field cannot be blank!'
       })
     }
     const user = await userHelper.getUserByEmail(email)
     if (!user) {
-      return res.status(400).send({
+      return res.status(404).send({
         status: 'error',
         message: 'This user does not exist!'
       })
@@ -23,7 +23,7 @@ const userLogin = async (req, res) => {
     const userPassword = user.password
     const isPasswordMatch = await bcrypt.compareSync(password, userPassword)
     if (!isPasswordMatch) {
-      return res.status(401).send({
+      return res.status(400).send({
         status: 'error',
         message: 'Wrong password!'
       })
@@ -135,7 +135,7 @@ const updatePassword = async (req, res) => {
       message: 'Updated user password successfully!'
     })
   } catch (error) {
-    errorLogger.error(`userController/updatePassword: ${error}`)
+    errorLogger.error(`userController/updatePassword: ${error.stack}`)
     return res.status(500).send({
       status: 'error',
       message: 'Unable to update user password'
@@ -215,7 +215,7 @@ const getUser = async (req, res) => {
     const user = await userHelper.getUserWithRelatedData(userId, includeRelatedData)
     if (!user) {
       warningLogger.warn('This user does not exist')
-      return res.status(400).send({
+      return res.status(404).send({
         status: 'error',
         message: 'This user does not exist'
       })

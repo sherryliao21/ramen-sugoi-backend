@@ -9,9 +9,9 @@ const getProfile = async (req, res) => {
     const userId = req.user.id
     const user = await User.findByPk(userId, { nest: true, raw: true })
     if (!user) {
-      return res.status(400).send({
+      return res.status(401).send({
         status: 'error',
-        message: 'This user does not exist!'
+        message: 'You have no permission to perform this action!'
       })
     }
     const response = {
@@ -24,7 +24,7 @@ const getProfile = async (req, res) => {
 
     return res.status(200).send(response)
   } catch (error) {
-    errorLogger.error(`userController/getProfile: ${error}`)
+    errorLogger.error(`userController/getProfile: ${error.stack}`)
     return res.status(500).send({
       status: 'error',
       message: 'Unable to get user profile'
@@ -37,9 +37,9 @@ const editProfile = async (req, res) => {
     const { fullName, nickName, description } = req.body
     const user = await User.findByPk(req.user.id)
     if (!user) {
-      return res.status(400).send({
+      return res.status(401).send({
         status: 'error',
-        message: 'This user does not exist!'
+        message: 'You have no permission to perform this action!'
       })
     }
     user.full_name = fullName
@@ -53,7 +53,7 @@ const editProfile = async (req, res) => {
       message: 'Updated user profile successfully!'
     })
   } catch (error) {
-    errorLogger.error(`userController/getProfile: ${error}`)
+    errorLogger.error(`userController/getProfile: ${error.stack}`)
     return res.status(500).send({
       status: 'error',
       message: 'Unable to edit user profile'
@@ -69,6 +69,13 @@ const uploadAvatar = async (req, res) => {
         message: 'File is missing'
       })
     }
+    const user = await User.findByPk(req.user.id)
+    if (!user) {
+      return res.status(401).send({
+        status: 'error',
+        message: 'You have no permission to perform this action!'
+      })
+    }
     const result = await s3ObjectStore.uploadAvatar(req.file, req.user.id, 'user')
     // unlink file from fs so that uploads/ will be empty after done uploading to s3
     const unlinkFile = util.promisify(fs.unlink)
@@ -80,7 +87,7 @@ const uploadAvatar = async (req, res) => {
       result
     })
   } catch (error) {
-    errorLogger.error(`userController/uploadAvatar: ${error}`)
+    errorLogger.error(`userController/uploadAvatar: ${error.stack}`)
     return res.status(500).send({
       status: 'error',
       message: 'Unable to upload user avatar'
@@ -110,6 +117,13 @@ const getAvatar = async (req, res) => {
 
 const deleteAvatar = async (req, res) => {
   try {
+    const user = await User.findByPk(req.user.id)
+    if (!user) {
+      return res.status(401).send({
+        status: 'error',
+        message: 'You have no permission to perform this action!'
+      })
+    }
     await s3ObjectStore.deleteAvatar(req.user.id, 'user')
 
     return res.status(200).send({
