@@ -2,7 +2,7 @@ version: '3'
 
 services:
   node:
-    image: sherryliao21/ramen-app:latest
+    image: sherryliao21/ramen-app:newest
     container_name: ramen-node-app
     build:
       context: ./

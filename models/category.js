@@ -1,5 +1,5 @@
 const { DataTypes } = require('sequelize')
-const ramenDB = require('../databases/mariaDB')
+const { ramenDB } = require('../databases/mariaDB')
 
 const Category = ramenDB.define(
   'category',

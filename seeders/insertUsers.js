@@ -1,7 +1,7 @@
 if (process.env.ENV !== 'production') {
   require('dotenv').config()
 }
-const ramenDB = require('../databases/mariaDB')
+const { ramenDB } = require('../databases/mariaDB')
 const { User, Role, Followship } = require('../models/index')
 const { infoLogger, errorLogger } = require('../utils/logger')
 

@@ -25,6 +25,8 @@ function authenticateDB(database, dbName) {
     .then(() => infoLogger.info(`[MariaDB] Successfully connected to '${dbName}'...`))
     .catch((error) => errorLogger.error(`[MariaDB] '${dbName}': Connection failed, ${error.stack}`))
 }
-authenticateDB(ramenDB, 'ramenDB')
 
-module.exports = ramenDB
+module.exports = {
+  ramenDB,
+  authenticateDB
+}

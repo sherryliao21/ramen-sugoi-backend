@@ -7,7 +7,9 @@ if (process.env.ENV !== 'production') {
 }
 const PORT = process.env.PORT || 3000
 
-require('./models/index')
+const { ramenDB, authenticateDB } = require('./databases/mariaDB')
+authenticateDB(ramenDB, 'ramenDB')
+require('./models/index').syncDB(ramenDB)
 const routes = require('./routes/index')
 
 app.use(express.json())
