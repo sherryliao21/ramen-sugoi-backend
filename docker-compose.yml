@@ -11,8 +11,10 @@ services:
       - '3000:3000'
     environment: # will replace .env variables
       - MDB_HOST=mariadb:3306
-      - MDB_USERNAME=root
-      - MDB_PASSWORD=password
+      - MDB_USERNAME=${MDB_USERNAME}
+      - MDB_PASSWORD=${MDB_PASSWORD}
+      - S3_REGION=${S3_REGION}
+      - S3_BUCKET_HOST=${S3_BUCKET_HOST}
     networks:
       - ramen-network
     depends_on:
